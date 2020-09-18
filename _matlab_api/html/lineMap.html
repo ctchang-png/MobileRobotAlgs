@@ -1,0 +1,431 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>lineMap - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">lineMap - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit lineMap">View code for lineMap</a></td>
+            <td class="subheader-right"><a href="matlab:doc lineMap">Go to online doc for lineMap</a></td>
+         </tr>
+      </table>
+      <div class="title">lineMap</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">lineMap</span> An environment map made up of polyLines.
+ 
+    Al Kelly: Jun 2020. A rewrite of <span class="helptopic">lineMap</span> to deal with the fact that the class
+    does not work for heterogeneous arrays formed from derived classes of
+    lineObject (now polyLine).
+ 
+    In particular, in order to force everything in the array to be the same type,
+    the line of code:
+ 
+            lc = cell2mat({lm.polyLines{:}.world_points}'); 
+ 
+    in rayCast was DELETING world_points for classes different from the
+    first class added.
+ 
+    This behavior was traced to the MATLAB treatment of arrays of
+    different types (even though all were derived from lineObject. In
+    the end, I decided to change the array structure of this class to a
+    cell array which is made specifically for lists of homogeneous
+    objects. See shapeList &lt; cellList for that.
+ 
+    Note that formSegmentEndpoints herein relies on
+    lineMapInstance.theList being a FLAT list of polyLines rather than
+    a tree. Subclassing from shapeList should guarantee that. It is
+    possible to change this assumption but it is done that way now for
+    efficiency. That is why we have both cellLists and cellTrees even
+    though the latter subsumes the former as a special case. The
+    present design can exploit the efficiency of cellFun and cellToMat.
+ 
+    Also, the segment endpoints are recomputed every time rayCast is
+    called. That has the advantage that code is simpler and more
+    self-contained and the disadvantage that it is expensive and
+    potentially wasteful. Wasteful because somewhere else in the code
+    it it known when objects are added and deleted and the segment
+    computation could be triggered from there instead of redone in
+    every rayCast.
+ 
+    This class also includes convenience routines to produce sampled
+    point clouds from the line segments and to find line segments that
+    intersect a ray.
+ 
+    This class isa shapeList and that allows it to hold the shape
+    handles of the objects added. Because line segments are recomputed
+    from the shapes every time rayCast is called, the process of
+    deleting line segments is as easy as deleting the shape that
+    produced them.
+ 
+    In other words, due to this "lazy", "delayed", or "continuous"
+    conversion to line segments design, this class implicitly enforces
+    the consistency between line segments used in the ray casting and
+    the objects in this shapeList which are the interface to the rest
+    of the system. Ideally, the rest of the system talks to world
+    modelling in terms of shapes and does not have to deal with line
+    segments.
+ 
+    Sept 2013: Original version for Neatos by Mike Shomin and Al Kelly
+    Sept 2015: Modified version inckuding noise sim by Abhijeet Tellavajhula
+    Sept 2017: Additions by Ariana Keeling
+    June 2020: Partial Redesign and numerous bug fixes by Al Kelly
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('shapeList')">shapeList</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.lineMap')">lineMap</a></td>
+            <td class="m-help">An environment map made up of polyLines.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.doIncidence')">doIncidence</a></td>
+            <td class="m-help">added by Al Nov 20, 2016. Default is off.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.isLeafNode')">isLeafNode</a></td>
+            <td class="m-help">set if this is a leaf node in the containment tree&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.modToPar')">modToPar</a></td>
+            <td class="m-help">HT of model frame wrt parent frame&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.modToWld')">modToWld</a></td>
+            <td class="m-help">HT of model frame wrt world frame&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.sampleResln')">sampleResln</a></td>
+            <td class="m-help">5 cm sampling resolution&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.theClass')">theClass</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.theList')">theList</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.addList')">addList</a></td>
+            <td class="m-help">adds a list of objects.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.addObj')">addObj</a></td>
+            <td class="m-help">Adds to this shapeList.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.check')">check</a></td>
+            <td class="m-help">Checks incoming data to see if it is compatible with theClass.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.closestPolyLine')">closestPolyLine</a></td>
+            <td class="m-help">Determines the closest polyLine on a ray for use in simulating laser data&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.delObj')">delObj</a></td>
+            <td class="m-help">Deletes the object from this list.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.formSegmentEndpoints')">formSegmentEndpoints</a></td>
+            <td class="m-help">Places the endpoints of all of the lidarVisible line segments in a column vector.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.getMatToParent')">getMatToParent</a></td>
+            <td class="m-help">Returns the HT of this object wrt the parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.getMatToWorld')">getMatToWorld</a></td>
+            <td class="m-help">Returns the HT of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.getPCD')">getPCD</a></td>
+            <td class="m-help">Returns point cloud data sampled uniformly from the line map&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.getPoseWrtParent')">getPoseWrtParent</a></td>
+            <td class="m-help">Returns the pose of this object wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.getPoseWrtWorld')">getPoseWrtWorld</a></td>
+            <td class="m-help">Returns the pose of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.identifySpuriousSegments')">identifySpuriousSegments</a></td>
+            <td class="m-help">Finds those line segemnts that are not really there.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.plot')">plot</a></td>
+            <td class="m-help">Plots the list in a figure. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.raycast')">raycast</a></td>
+            <td class="m-help">Returns the distance and angle of incidence to each polyLine&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.raycastNoisy')">raycastNoisy</a></td>
+            <td class="m-help">Introduces noise to the raycast function.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.sampleFromLines')">sampleFromLines</a></td>
+            <td class="m-help">Returns points sampled from a line array &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.setPoseAndUpdate')">setPoseAndUpdate</a></td>
+            <td class="m-help">sets the latest poseWrtWld.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.setPoseWrtParent')">setPoseWrtParent</a></td>
+            <td class="m-help">Changes the pose of this node wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.setPoseWrtWorld')">setPoseWrtWorld</a></td>
+            <td class="m-help">Changes the pose of this node wrt the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.updateChildren')">updateChildren</a></td>
+            <td class="m-help">Updates all the children to reflect changes.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('lineMap.updatePoseWrtWorld')">updatePoseWrtWorld</a></td>
+            <td class="m-help">Updates the pose of this object in the world.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('lineMap.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

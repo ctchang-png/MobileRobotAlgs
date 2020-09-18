@@ -1,0 +1,464 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>simDiffSteer - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">simDiffSteer - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit simDiffSteer">View code for simDiffSteer</a></td>
+            <td class="subheader-right"><a href="matlab:doc simDiffSteer">Go to online doc for simDiffSteer</a></td>
+         </tr>
+      </table>
+      <div class="title">simDiffSteer</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">simDiffSteer</span> Simulates a differential steer robot. 
+ 
+    Renamed from earlier "simRobot" because the entire simulator
+    contains this class solely for the purpose of motion simulation.
+ 
+    Accepts left and right wheel commands or encoder readings for a
+    differentially steered robot and integrates them with respect to
+    time in the plane. Produces a pose estimate of the form [x y th].
+ 
+    Independently from the nature of time that is used, the class can
+    be used for estimation if you drive it with encoder readings or for
+    predictive control if you drive it with commands.
+ 
+    It actually makes sense to have up to three independent instances
+    of this class - for reference trajectories, estimated trajectories,
+    and simulation but it makes no sense to use one instance for any
+    two or more more simultaneously.
+ 
+    Like almost any motion simulator, this class models the velocity
+    kinematics of the platform, and it converts from commanded or
+    sensed wheel velocities or distances to the resulting position and
+    orientation by integrating a nonlinear underactuated kinematic
+    differential equation. That is the easy part and it takes just a
+    few lines of code.
+ 
+    A key design feature is accurate simulation of a fixed delay
+    between the sending of commands to the robot and the resulting
+    action. In the case where this object is driven by commands,
+    they are placed in a FIFO implemented as a sliding vector so
+    that an (interpolated and) delayed command is the one being
+    simulated. Commands are assumed to arrive with monotone time tags
+    and it is only possible to query the latest state. In effect, when
+    driven by commands, this object simulates the data at RECIEVE TIME
+    and the latest commands provided are treated as not having arrived
+    yet. This interpolated FIFO business is an attempt to do this right
+    because the problem requires you to deal with the fact that the
+    delay is almost never an integer number of cycles of this
+    simulator. Therefore, in addition to using a FIFO to model the
+    delays, the FIFO has to be interpolated when the delayed time
+    queried falls between two historical samples.
+ 
+    This class can be configured to work in "real time" (from the
+    processor clock) or to work from "supplied time" - time tags on
+    commands or sensor data; you choose which when the object is turned
+    on and you have to stick with that choice afterwards. This is a
+    design feature to prevent mixing up time sources (which cannot ever
+    be correct). 
+ 
+    This feature matters because a) the clock on a remote robot is not
+    even close to synchronized with the one used to run this object and
+    b) even if it was, the delays and sampling of the signals going
+    back and forth would make it irrelevant even if they were
+    synchronized. The most accurate way to process incoming encoder
+    data is to use the time tags produced on the robot but the most
+    accurate way to model output command latency is to use the clock on
+    this computer. Further complicating things is the fact that
+    simulation takes significant processing so using a simulator slows
+    down your controller algorithn and changes its real time
+    performance for the worse. All of that adds up to it being best for
+    this simulation purpose to use a) encoder time tags for state
+    estimation and b) supplied time from a suspendable clock for
+    processing commands. Neither of those is "real" in the sense of
+    reading the actual clock on this computer but that option remains
+    here so you can try it yourself.
+ 
+    As complicated as all that is, it makes controlling a simulated
+    robot pretty close to the real thing from a timing point of view.
+    All of that discussion is about how this simulator works. In your
+    own control code, use real time (tic and toc) or robotIF.toc when
+    controlling a real robot and ask the parent simulator of this
+    object for the time on the suspendable clock when controlling the
+    simulator.
+ 
+    Logging a dedicated number of samples of pose, command, and time is
+    built-in for convenience if enabled in the constructor. This can be
+    useful for producing plots to debug your code or to debug this
+    class. As of now (May 2020) delayed velocity is interpolated at the
+    encoder (state update) rate and this means the simulated robot will
+    come to a stop tDelay seconds after the first zero command is
+    issued.
+ 
+    This class is implemented to support concurrent programming despite
+    MATLABs scant facilities to support it. In the absence of a test
+    and set facility in MATLAB to implement a semaphone, the design
+    performs all FIFO processing inside the call to updateState() and
+    its descendants. That function is intended to tolerate being called
+    inside a timer interrupt service routine (ISR) which is configured
+    so that it runs to completion and cannot interrupt itself. The most
+    "critical" code sections are those that update the FIFOs and shift
+    the data. All three of the FIFOs for (vl,vr,t) must be in a
+    consistent state and not in the middle of shifting when they are
+    queried by the interp1 function. To ensure this, commands are
+    placed in holding variables "lastvr" etc. by the user thread and
+    then moved to the FIFOs in the ISR thread. A dozen other designs
+    were tried and all did not avoid deadlock and/or inconsistent
+    accesses. Of course, the holding variables could be queried in an
+    inconsistent state too but in that case we are talking about smooth
+    time signals rather than shifting data in memory, so the effects
+    will be tolerable.
+ 
+    Due to the nondeterministic behavior of concurrent threads, you
+    should not change that aspect of this class lightly. It was a
+    painful process to get where we are. Note that adding printfs to
+    debug it can change or eliminate the timing issues that caused the
+    bug you are trying to find. Despite all that emphasis on
+    concurrency, you do not have to use this class with two different
+    threads. It is perfectly fine to send it commands or encoders using
+    real or provided time and query state.
+ 
+    Because we are integrating a nonlinear DE here, it is a basic
+    assumption that state updates are requested fast enough to reduce
+    integration error to tolerable levels. There is no required update
+    rate for commands though. You can send it just one and integrate it
+    forever.
+ 
+    In the case of real-time, it is critical that you fire up the
+    instance right before (and not "some time" before) you start
+    feeding it commands or sensor readings. This makes the delays and
+    time derivatives work correctly.  This 2020 update has also removed
+    the need to "fire_up" this object externally in order to reduce the
+    burden on the user. You can still do it but if you do not, it will
+    be done when the first command or encoder frame comes in. Again,
+    this last minute (microsecond?) fire up is important for delays and
+    time derivatives to work correctly and it is a key pragma for
+    tolerating MATLABs delayed parsing techniques. MATLAB was never
+    intended to be real time so we merely do our best anyway.
+ 
+    Attempting to read past the FIFO on either end will now return the
+    first or last element as appropriate. This feature should prevent
+    MATLABs interp1 from ever returning a NaN -- which used to be a
+    signficant failure mode.
+ 
+    Error models are used to corrupt both encoder data and outgoing
+    commands by amounts that are peculiar to each robot id.
+ 
+    Sept 2013: Original design and first implementation by Al Kelly
+    Sept 2014: Integration into MRPL course infrastructure by Mike Shomin
+    June 2020: Redesign for better performance, more concurrency
+    robustness, error models by Al Kelly
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.simDiffSteer')">simDiffSteer</a></td>
+            <td class="m-help">Constructs a simDiffSteer. &nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.W')">W</a></td>
+            <td class="m-help">wheelTread in m&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.W2')">W2</a></td>
+            <td class="m-help">1/2 wheelTread in m&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.encoders')">encoders</a></td>
+            <td class="m-help">wheel encoders&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.maxFifo')">maxFifo</a></td>
+            <td class="m-help">max length of command FIFOs (100)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.maxLogLen')">maxLogLen</a></td>
+            <td class="m-help">max length of logging buffers&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.pose')">pose</a></td>
+            <td class="m-help">pose of robot&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.s')">s</a></td>
+            <td class="m-help">distance traveled&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.dumpQueues')">dumpQueues</a></td>
+            <td class="m-help">Dumps the contents of the FIFO queues. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.fireUpForRealTime')">fireUpForRealTime</a></td>
+            <td class="m-help">Starts the clock for real time sim.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.fireUpForSuppliedTime')">fireUpForSuppliedTime</a></td>
+            <td class="m-help">Starts the clock for supplied time sim.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.getDelayedVw')">getDelayedVw</a></td>
+            <td class="m-help">Returns the most recent velocity commands processed. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.getDistance')">getDistance</a></td>
+            <td class="m-help">Returns the most recent computed distance.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.getPose')">getPose</a></td>
+            <td class="m-help">Returns the most recent computed pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.getlastStateTime')">getlastStateTime</a></td>
+            <td class="m-help">Returns the most recent computed time.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.initializeHandleClasses')">initializeHandleClasses</a></td>
+            <td class="m-help">Initializes all of the properties for this object that &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.sendVelocity')">sendVelocity</a></td>
+            <td class="m-help">Sends velocity commands to the left and right wheels.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.sendVelocityAtTime')">sendVelocityAtTime</a></td>
+            <td class="m-help">Sends velocity commands with the provided time tag.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.setDebug')">setDebug</a></td>
+            <td class="m-help">Used to turn on debugging for this instance only. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.stop')">stop</a></td>
+            <td class="m-help">Sends zero velocity to stop the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.stopAtTime')">stopAtTime</a></td>
+            <td class="m-help">Sends zero velocity to stop the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.updateState')">updateState</a></td>
+            <td class="m-help">Updates state based only on the passage of real time.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.updateStateAtTime')">updateStateAtTime</a></td>
+            <td class="m-help">Updates state based on a supplied time.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.updateStateFromEncodersAtTime')">updateStateFromEncodersAtTime</a></td>
+            <td class="m-help">updates posn and orientation.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simDiffSteer.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

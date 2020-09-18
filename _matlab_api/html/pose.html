@@ -1,0 +1,370 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>pose - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">pose - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit pose">View code for pose</a></td>
+            <td class="subheader-right"><a href="matlab:doc pose">Go to online doc for pose</a></td>
+         </tr>
+      </table>
+      <div class="title">pose</div>
+      <div class="helptext"><pre><!--helptext --> pose A pose object in 2D with special operators defined.
+ 
+    A layer over a pose vector that permits you to treat it like a
+    homegeneous transform or a parameter vector whenever each is
+    convenient. 
+ 
+    NOTE: This help file may be shadowed by other MATLAB toolboxes and
+    not visible when you "view help". In my case, I turned off help for
+    the sensor fusion and tracking toolbox (in Preferences&gt;Help) in
+    order to see it.
+ 
+    Homogeneous transforms and pose vectors contain the same semantic
+    information, but we often want to manipulate them in many different
+    ways:
+        1) as an operator or transform on points: pt2 = pose^-1 * pt1 
+        2) as a struct containing coordinates: pose.x and pose.th 
+        3a) as a vector of coordinates: y = pose(2); 
+        3b) as a vector of coordinates: dPose = - gradient*0.001; 
+        3c) as a vector of coordinates: pose = pose + dPose; 
+        4) as a class with useful functions: vec2 = pose.bToA()* vec1
+ 
+    All of the above are legal uses of an instance of this class and
+    best of all, it automatically figures out which one you mean. This
+    class is very special in that it redefines several MATLAB
+    operations to make the user's life much easier. As a general rule,
+    if the operation you asked for can be construed to produce a pose, it
+    will be coerced to produce a pose. Otherwise, it will produce a
+    native vector or matrix.
+ 
+    The poseStatic class is also provided (and inherited here) if you
+    want to avoid dependence of your code on this special class. To use
+    that, for example:
+            myHT = pose.poseVecToMat([1 ; 2 ; pi]))
+    provides the homogeneous transform that corresponds to the
+    provided pose vector.
+ 
+    In order to support direct left multiplication by a Jacobian matrix
+    in localization pose refinement, poses behave like column vectors.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('poseStatic')">poseStatic</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('pose.pose')">pose</a></td>
+            <td class="m-help">Constructs an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.aToB')">aToB</a></td>
+            <td class="m-help">Returns the reverse homogeneous transform.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.aToBRot')">aToBRot</a></td>
+            <td class="m-help">Returns 2X2 rotation matrix part of the reverse HT.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.bToA')">bToA</a></td>
+            <td class="m-help">Returns the direct homogeneous transform.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.bToARot')">bToARot</a></td>
+            <td class="m-help">Returns 2X2 rotation matrix part of the direct HT.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.ctranspose')">ctranspose</a></td>
+            <td class="m-help">Transposes a pose and produces a row vector. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.disp')">disp</a></td>
+            <td class="m-help">Display the conten of this pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.matToPoseVec')">matToPoseVec</a></td>
+            <td class="m-help">Convert a homogeneous transform into a pose column vector.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.minus')">minus</a></td>
+            <td class="m-help">Subtracts a pose and a pose or vector to produce a new pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.mpower')">mpower</a></td>
+            <td class="m-help">Raises a pose (its HT) to a power. Pow=-1 means inversion.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.mtimes')">mtimes</a></td>
+            <td class="m-help">multiplies a pose (it's HT) times a pose (it's HT) or a vector. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.objToWorld')">objToWorld</a></td>
+            <td class="m-help">Object pose in the world given robot pose in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.plus')">plus</a></td>
+            <td class="m-help">Adds a poses and a pose or vector to produce a new pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.poseError')">poseError</a></td>
+            <td class="m-help">Provides a scalar measure of pose error.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.poseVecToMat')">poseVecToMat</a></td>
+            <td class="m-help">Converts a pose column vector into a homogeneous transform.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.robToWorld')">robToWorld</a></td>
+            <td class="m-help">Robot pose in the world given object pose in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.subsasgn')">subsasgn</a></td>
+            <td class="m-help">Assigns an indexed component of this pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.subsref')">subsref</a></td>
+            <td class="m-help">Returns an indexed component of this pose.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.th')">th</a></td>
+            <td class="m-help">Returns the th coordinate of this pose object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.x')">x</a></td>
+            <td class="m-help">Returns the x coordinate of this pose object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('pose.y')">y</a></td>
+            <td class="m-help">Returns the y coordinate of this pose object.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('pose.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

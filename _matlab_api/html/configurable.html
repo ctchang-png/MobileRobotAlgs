@@ -1,0 +1,290 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>configurable - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">configurable - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit configurable">View code for configurable</a></td>
+            <td class="subheader-right"><a href="matlab:doc configurable">Go to online doc for configurable</a></td>
+         </tr>
+      </table>
+      <div class="title">configurable</div>
+      <div class="helptext"><pre><!--helptext --> configurable A node in a containment / pose hierarchy.
+ 
+    The purpose of this class is to propagate pose changes in a
+    hierarchy. Each configurable node exists in a tree where all nodes
+    but the root have one "parent" to which they are tied
+    geometrically. Typically that geometric link is a rigid one but
+    nothing prevents you from changing the link in real time to model
+    articulation. Now every node in the tree also has a pose wrt the
+    world frame and typically the root node is being actively moved by
+    a motion simulator. For rendering and dynamic simulation it is
+    fundamental to need to know the position and orientation of every
+    part of an object in the world frame. Therefore, the pose
+    "propagation" problem comes down to computing the poseWrtWorld of
+    every node in the tree once the root is moved. That is a
+    traditional tree traversal with some matrix multiplication
+    occurring at each node.
+ 
+    The nomenclature is based on:
+        mod = model frame of this
+        par = parent frame
+        wld = world frame
+ 
+    While this class would be more readable if poses were stored as
+    vectors, that would imply a pose-HT-pose operation every time it is
+    touched, so pose data is stored instead in terms of homogeneous
+    transforms (HTs) in order to make animation efficient. As a
+    compromise, the most commonly used functions accept pose vectors as
+    arguments and will convert them to internal form.
+ 
+    This class only handles the storage and propagation of pose
+    information. The containment hierarchy is managed and stored
+    externally to here.
+ 
+    The verbs in the function names are suggestive of their frequency
+    of use, The propagation of motion (poseWrtWorld) is the expensive
+    part and you have to "update" it on a regular basis in animation.
+    It is also the only part that really propagates. The poseWrtParent
+    information is by definition a relative pose in a network always of
+    length one, so you can "set" it and forget it unless you are
+    altering configuration, or attachment, or modelling articulation.
+ 
+    Note that configurables are moveables by default based on the
+    inheritance hierarchy. It does not have to be that way in general
+    but for this system, there is no use for a containment hierarchy
+    for objects that do not move.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('moveable')">moveable</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('configurable.configurable')">configurable</a></td>
+            <td class="m-help">Creates an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('configurable.isLeafNode')">isLeafNode</a></td>
+            <td class="m-help">set if this is a leaf node in the containment tree&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('configurable.modToPar')">modToPar</a></td>
+            <td class="m-help">HT of model frame wrt parent frame&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('configurable.modToWld')">modToWld</a></td>
+            <td class="m-help">HT of model frame wrt world frame&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.getMatToParent')">getMatToParent</a></td>
+            <td class="m-help">Returns the HT of this object wrt the parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.getMatToWorld')">getMatToWorld</a></td>
+            <td class="m-help">Returns the HT of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.getPoseWrtParent')">getPoseWrtParent</a></td>
+            <td class="m-help">Returns the pose of this object wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.getPoseWrtWorld')">getPoseWrtWorld</a></td>
+            <td class="m-help">Returns the pose of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.setPoseWrtParent')">setPoseWrtParent</a></td>
+            <td class="m-help">Changes the pose of this node wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.setPoseWrtWorld')">setPoseWrtWorld</a></td>
+            <td class="m-help">Changes the pose of this node wrt the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('configurable.updatePoseWrtWorld')">updatePoseWrtWorld</a></td>
+            <td class="m-help">Updates the pose of this object in the world.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('configurable.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

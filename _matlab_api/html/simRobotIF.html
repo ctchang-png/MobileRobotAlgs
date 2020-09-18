@@ -1,0 +1,358 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>simRobotIF - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">simRobotIF - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit simRobotIF">View code for simRobotIF</a></td>
+            <td class="subheader-right"><a href="matlab:doc simRobotIF">Go to online doc for simRobotIF</a></td>
+         </tr>
+      </table>
+      <div class="title">simRobotIF</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">simRobotIF</span> The simulated robot interface to the raspbot.
+ 
+    Intended to work identically to the realRobotIF class except that the
+    robot is simulated. This simulator can be run in manual mode by
+    calling manualUpdate or it can be invoked automatically by an
+    interval timer.
+  
+    The interval timer case is intended to mimic the behavior of the real
+    robot in that it is always running whether your code is running or
+    not and it is always sending data even if no one is listening.
+ 
+    Presently, the robot is not represented in its own world list, so,
+    for example, it cannot block its own lidar emissions. A few things
+    would have to be changed slightly if it were in there. If that were
+    done, and many robots were added to the worldList, they woubd be
+    abe to see then each other in lidar.
+ 
+    The frequency of sim updates is set in robotIF. It is set at 90 Hz in
+    Jul 2020 in order to mimic the robot. That corresponds to about 22
+    Hz encoders and 4 Hz lidar messages.
+ 
+    Error models are used for encoders, lidar and wheel commands, to
+    make the data and the motion imperfect. See errorModel for the
+    models. These models are different for each robot but persistent
+    from run to run for the same robot id. In other wiords, if you
+    calibrate these errors out in one run, they will stay calibrated
+    forever or until the error model is deliberately changed. For
+    convenience in debugging, robot 0 is uncorrupted.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help --><!--demo--><div class="footerlinktitle">Published output in the Help browser</div><div class="footerlink">
+       <a href="matlab:showdemo simRobotIF">showdemo simRobotIF</a></div>
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('raspbot')">raspbot</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.simRobotIF')">simRobotIF</a></td>
+            <td class="m-help">Construct an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.camera')">camera</a></td>
+            <td class="m-help">camera message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.do_manual')">do_manual</a></td>
+            <td class="m-help">manual updates (no interval timer) if on. Defaults to off.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.do_sim')">do_sim</a></td>
+            <td class="m-help">simulation if on. Defaults to on.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.do_tts')">do_tts</a></td>
+            <td class="m-help">tts in say command&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.encoders')">encoders</a></td>
+            <td class="m-help">encoder message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.id')">id</a></td>
+            <td class="m-help">robot unique id number&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.initial_pose')">initial_pose</a></td>
+            <td class="m-help">initial pose. defaults to [0;0;0]        &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.laser')">laser</a></td>
+            <td class="m-help">laser message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.laser_scan_pose')">laser_scan_pose</a></td>
+            <td class="m-help">pose wrt world of most recent laser scan&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.sim_motion')">sim_motion</a></td>
+            <td class="m-help">motion simulator&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.sus_clock')">sus_clock</a></td>
+            <td class="m-help">suspendable clock used to make sim cycles disappear&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.world_list')">world_list</a></td>
+            <td class="m-help">world list that produces line map for lidar sim&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.addObjects')">addObjects</a></td>
+            <td class="m-help">Adds a shape(s) to the simulation world model.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.captureImage')">captureImage</a></td>
+            <td class="m-help">Captures an image from the forward-facing camera on the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.forksDown')">forksDown</a></td>
+            <td class="m-help">Moves forks to lowered position.    &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.forksUp')">forksUp</a></td>
+            <td class="m-help">Moves forks to raised position.              &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.say')">say</a></td>
+            <td class="m-help">Commands the robot to say a phrase from its speakers.  &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.sendVelocity')">sendVelocity</a></td>
+            <td class="m-help">Sends left and right wheel velocity commands to the robot. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.sendVelocityOut')">sendVelocityOut</a></td>
+            <td class="m-help">sends wheel velocities to the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.shutdown')">shutdown</a></td>
+            <td class="m-help">Stops simulation.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.simUpdate')">simUpdate</a></td>
+            <td class="m-help">Runs one time step of the simulator.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.stampFromTime')">stampFromTime</a></td>
+            <td class="m-help">Converts a time to a ROS timestamp.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.startLaser')">startLaser</a></td>
+            <td class="m-help">Turns on Neato laser sensor, causing it to spin. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.stop')">stop</a></td>
+            <td class="m-help">Commands the robot to stop moving.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.stopLaser')">stopLaser</a></td>
+            <td class="m-help">Turns off Neato laser sensor, causing it to stop spinning.      &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('simRobotIF.timeFromStamp')">timeFromStamp</a></td>
+            <td class="m-help">Converts a ROS timestamp to a time.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('simRobotIF.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

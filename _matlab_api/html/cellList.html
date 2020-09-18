@@ -1,0 +1,272 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>cellList - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">cellList - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit cellList">View code for cellList</a></td>
+            <td class="subheader-right"><a href="matlab:doc cellList">Go to online doc for cellList</a></td>
+         </tr>
+      </table>
+      <div class="title">cellList</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">cellList</span> A linear list of components. 
+ 
+    A basic mechanism to store and manipulate a list of "stuff" in a
+    standard manner. MATLAB already has ways to store stuff in cell
+    arrays and object arrays but this class is created to enforce some
+    standards like: 
+    1) every list is a homogeneous cell array, not a
+    matrix or a heterogeneous array or an object array. These are
+    pretty efficient. 
+    2) it is a row vector, not a column vector 
+    3) simple error checking will prevent you making mistakes
+ 
+    Why bother? Because:
+    1) MATLAB silently coerces your data when you put different things
+    in an array and, even for derived classes, deletes some of it!
+    2) MATLAB will occasionally concatenate new information to the
+    last component of an array rather than to the array itself. No
+    doubt that is what you asked for but why bother with such subtle
+    syntax?
+    3) Your code sometimes breaks when you assume a row is a column or
+    vice versa.
+    4) Generally, there are just too many ways to get yourself into
+    trouble with MATLAB's various ways to provide data sructures in a
+    math language. And there are too many ways for you to remember
+    which one is being used unless you impose your own standards on
+    "your" way of dong things.
+ 
+    This class depends on the isa() MATLAB function to enforce
+    homogeneity and the delete function here depends on '==' also known
+    as 'eq' working. eq does work for handles and that is mostly the
+    intended use of this class. Once you specify "theClass" in the
+    construtor, only objects of that class (i.e. including subclasses)
+    are permitted in the structure.
+ 
+    This class also depends on subclasses passing the isa
+    test for its superclass. In other words if a &lt; b &lt; c then an
+    instance of a isa c. This property allows you to store numerous
+    different subclasses in the same list when you want to treat them
+    as the superclass. In practice here, that means robotShapes,
+    circleShapes, rangeImageShapes etc are all shapes so they can all
+    go in a displayList of shapes to remember what is to be rendered.
+ 
+    In THIS class (not cellTree), there is a convention that when a
+    list is added to a list, the incoming list is exploded into its
+    components before it is added. This is useful in, for example,
+    rayCasting which just needs a list of lines (the bare position of
+    all the points that can reflect lidar) and does not care about the
+    semantics or hierarchy of the objects participating. If you want
+    more complicated structure, use the derived class cellTree.
+ 
+    This class is wholly about structure, addition and deletion etc. If
+    you want the nodes stored in the structure to mean something, that
+    is done outside here. Think of this class as an abstract data
+    structure that MATLAB should have provided which is equivalent to
+    Java's ArrayList.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('cellList.cellList')">cellList</a></td>
+            <td class="m-help">Construct an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('cellList.theClass')">theClass</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('cellList.theList')">theList</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.addList')">addList</a></td>
+            <td class="m-help">adds a list of objects.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.addObj')">addObj</a></td>
+            <td class="m-help">Adds to this list.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.check')">check</a></td>
+            <td class="m-help">Checks incoming data to see if it is compatible with theClass.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.delObj')">delObj</a></td>
+            <td class="m-help">Deletes the object from this list.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('cellList.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('cellList.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

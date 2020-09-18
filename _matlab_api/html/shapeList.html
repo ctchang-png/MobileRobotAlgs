@@ -1,0 +1,344 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>shapeList - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">shapeList - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit shapeList">View code for shapeList</a></td>
+            <td class="subheader-right"><a href="matlab:doc shapeList">Go to online doc for shapeList</a></td>
+         </tr>
+      </table>
+      <div class="title">shapeList</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">shapeList</span> A list of shapes.
+ 
+    The basic data structure is a cell vector of shapes. This class
+    is used represent a long list of lines describing the world
+    for simulation purposes. 
+ 
+    Via superclasses it combines all four aspects of multi-component
+    structure, shape (boundary) definition, geometric linkage
+    (configuration) and animation (motion). This class is the package
+    that makes them all work together.
+ 
+    ShapeLists are configurables and so have poses relative to their
+    parent. Because configurables are moveables, they also have poses
+    wrt the world frame. This class constructor is the ultimate
+    destination for a few layers of its own subclasses that create
+    shapes for rendering and simulation. All of them accept the same
+    arguments as <span class="helptopic">shapeList</span> and pass them here in order to convert a
+    MATLAB cell vector of homogeneous point matrices into a "cellList"
+    object as defined by this system with all of the features (imparted
+    by <span class="helptopic">shapeList</span> superclasses) of animation/rendering, and motion and
+    lidar simulation.
+ 
+    This class is "flattening" meaning ... if you add a tree or a list
+    to this object, the structure-being-added is first broken into its
+    components and the components are then added individually. That is
+    desireable behavior when processing hierarchical shapes into a line
+    segment list for use in lidar simulation.
+ 
+    ShapeLists are also used to "initially" define shapes for animation
+    and simulation. That "initially" means that robot and pallets are
+    created as a single list of parts. Later, however, they may be
+    joined together in a more complicated cellTree structure by the
+    process of attachment that lets the pallet, for example, move
+    (temporarily) rigidly with the forks until it is placed on the
+    floor again.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('cellList')">cellList</a>, <a href="matlab:helpwin('configurable')">configurable</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.shapeList')">shapeList</a></td>
+            <td class="m-help">Creates a shapeList.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.isLeafNode')">isLeafNode</a></td>
+            <td class="m-help">set if this is a leaf node in the containment tree&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.modToPar')">modToPar</a></td>
+            <td class="m-help">HT of model frame wrt parent frame&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.modToWld')">modToWld</a></td>
+            <td class="m-help">HT of model frame wrt world frame&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.theClass')">theClass</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.theList')">theList</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.addList')">addList</a></td>
+            <td class="m-help">adds a list of objects.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.addObj')">addObj</a></td>
+            <td class="m-help">Adds to this shapeList.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.check')">check</a></td>
+            <td class="m-help">Checks incoming data to see if it is compatible with theClass.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.delObj')">delObj</a></td>
+            <td class="m-help">Deletes the object from this list.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.getMatToParent')">getMatToParent</a></td>
+            <td class="m-help">Returns the HT of this object wrt the parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.getMatToWorld')">getMatToWorld</a></td>
+            <td class="m-help">Returns the HT of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.getPoseWrtParent')">getPoseWrtParent</a></td>
+            <td class="m-help">Returns the pose of this object wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.getPoseWrtWorld')">getPoseWrtWorld</a></td>
+            <td class="m-help">Returns the pose of this object in the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.plot')">plot</a></td>
+            <td class="m-help">Plots the list in a figure. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.setPoseAndUpdate')">setPoseAndUpdate</a></td>
+            <td class="m-help">sets the latest poseWrtWld.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.setPoseWrtParent')">setPoseWrtParent</a></td>
+            <td class="m-help">Changes the pose of this node wrt its parent.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.setPoseWrtWorld')">setPoseWrtWorld</a></td>
+            <td class="m-help">Changes the pose of this node wrt the world.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.updateChildren')">updateChildren</a></td>
+            <td class="m-help">Updates all the children to reflect changes.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('shapeList.updatePoseWrtWorld')">updatePoseWrtWorld</a></td>
+            <td class="m-help">Updates the pose of this object in the world.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('shapeList.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

@@ -1,0 +1,333 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>raspbot - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">raspbot - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit raspbot">View code for raspbot</a></td>
+            <td class="subheader-right"><a href="matlab:doc raspbot">Go to online doc for raspbot</a></td>
+         </tr>
+      </table>
+      <div class="title">raspbot</div>
+      <div class="helptext"><pre><!--helptext --> raspbot An abstract class to define a common interface for sim and reality.
+ 
+    A class which supplies functions for connecting to, controlling, and
+    acquiring data from a RaspBot. The commands can be used both in
+    simulation and with a real robot. They are declared abstract here to
+    enforce the required interface on sub classes.
+ 
+    The real robots send ROS messages to this class and the simulated one
+    produces identical simulated messages so that the interface to
+    application code is identical.
+ 
+    When used in simulation, the derived simulation class uses a
+    suspendable clock in order to make CPU cycles spent in simulation
+    disappear. This time standard is used to time tag simulated encoder
+    data that is passed out of here directly or via the simulated ROS
+    interface.
+ 
+    No robot communications or graphics take place here. That happens in
+    derived and support classes.
+ 
+    Commands to "sendVelocity" to real or simulated robots go through
+    here where they are checked for validity and subsampled to avoid
+    overloading the robot with commands. Once the decision to actually
+    send a particular command is made, the sub class sendVelocityOut()
+    function is called to actually do the sending. Part of the point of
+    this is to subsample commands to the simulator exactly as they are
+    subsampled for the real robot. One outcome of this subsampling is
+    you cannot rely on a single command of zero velocity stopping the
+    robot. Call stop() if you want to guarantee that your command gets
+    to the (real or simulated) robot.
+ 
+    Sept 2013: Original version for Neatos by Mike Shomin and Al Kelly
+    Sept 2016: Modified version for RaspBots and ROS by Dane Bennington
+    Sept 2017: Additions for Audio and Forks by Ariana Keeling
+    June 2020: Redesign and numerous bug fixes by Al Kelly
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help --><!--demo--><div class="footerlinktitle">Published output in the Help browser</div><div class="footerlink">
+       <a href="matlab:showdemo raspbot">showdemo raspbot</a></div>
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('robotBaseClass')">robotBaseClass</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.raspbot')">raspbot</a></td>
+            <td class="m-help">Creates an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.camera')">camera</a></td>
+            <td class="m-help">camera message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.do_manual')">do_manual</a></td>
+            <td class="m-help">manual updates (no interval timer) if on. Defaults to off.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.do_sim')">do_sim</a></td>
+            <td class="m-help">simulation if on. Defaults to on.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.encoders')">encoders</a></td>
+            <td class="m-help">encoder message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.id')">id</a></td>
+            <td class="m-help">robot unique id number&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.initial_pose')">initial_pose</a></td>
+            <td class="m-help">initial pose. defaults to [0;0;0]        &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.laser')">laser</a></td>
+            <td class="m-help">laser message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.sus_clock')">sus_clock</a></td>
+            <td class="m-help">suspendable clock used to make sim cycles disappear&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.sendVelocity')">sendVelocity</a></td>
+            <td class="m-help">Sends left and right wheel velocity commands to the robot. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.stampFromTime')">stampFromTime</a></td>
+            <td class="m-help">Converts a time to a ROS timestamp.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.timeFromStamp')">timeFromStamp</a></td>
+            <td class="m-help">Converts a ROS timestamp to a time.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.captureImage')">captureImage</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.forksDown')">forksDown</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.forksUp')">forksUp</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.say')">say</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.sendVelocityOut')">sendVelocityOut</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.shutdown')">shutdown</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.startLaser')">startLaser</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.stop')">stop</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Abstract 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('raspbot.stopLaser')">stopLaser</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('raspbot.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

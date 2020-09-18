@@ -1,0 +1,351 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>realRobotIF - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">realRobotIF - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit realRobotIF">View code for realRobotIF</a></td>
+            <td class="subheader-right"><a href="matlab:doc realRobotIF">Go to online doc for realRobotIF</a></td>
+         </tr>
+      </table>
+      <div class="title">realRobotIF</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">realRobotIF</span> The real robot interface to the raspbot.
+ 
+    Intended to work identically to the simRobotIF class except that the robot is
+    real. That means you need to connect to the robot's wifi SSID
+    before you can expect this interface to work.
+ 
+    A visualization that is identical to that simulator is provided,
+    except of course, that the robot does not know where it is or where
+    the walls etc. are. A robot pose is computed here that will make
+    the robot move appropriately on screen. This pose pure dead
+    reckoning and will drift significantly. The visualization can be
+    run in manual mode by calling manualUpdate or it can be invoked
+    automatically by an interval timer.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help --><!--demo--><div class="footerlinktitle">Published output in the Help browser</div><div class="footerlink">
+       <a href="matlab:showdemo realRobotIF">showdemo realRobotIF</a></div>
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('raspbot')">raspbot</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.realRobotIF')">realRobotIF</a></td>
+            <td class="m-help">Construct an instance of this class&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.ROS_connected')">ROS_connected</a></td>
+            <td class="m-help">ROS connected flag&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.camera')">camera</a></td>
+            <td class="m-help">camera message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.do_manual')">do_manual</a></td>
+            <td class="m-help">manual updates (no interval timer) if on. Defaults to off.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.do_sim')">do_sim</a></td>
+            <td class="m-help">simulation if on. Defaults to on.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.encoders')">encoders</a></td>
+            <td class="m-help">encoder message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.fork_pub')">fork_pub</a></td>
+            <td class="m-help">forks up/down message out ROS publisher&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.id')">id</a></td>
+            <td class="m-help">robot unique id number&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.initial_pose')">initial_pose</a></td>
+            <td class="m-help">initial pose. defaults to [0;0;0]        &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.laser')">laser</a></td>
+            <td class="m-help">laser message in ROS subscriber&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.laser_pub')">laser_pub</a></td>
+            <td class="m-help">laser on/off message out ROS publisher&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.playFile_pub')">playFile_pub</a></td>
+            <td class="m-help">fileWrite_pub;&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.robot_pose')">robot_pose</a></td>
+            <td class="m-help">robot pose&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.speech_pub')">speech_pub</a></td>
+            <td class="m-help">kill_pub;       % kill message out ROS publisher&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.sus_clock')">sus_clock</a></td>
+            <td class="m-help">suspendable clock used to make sim cycles disappear&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.timeOut')">timeOut</a></td>
+            <td class="m-help">connection timeout in seconds&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.vel_pub')">vel_pub</a></td>
+            <td class="m-help">velocity message out ROS publisher&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.captureImage')">captureImage</a></td>
+            <td class="m-help">Captures an image from the forward-facing camera on the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.forksDown')">forksDown</a></td>
+            <td class="m-help">Moves forks to lowered position.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.forksUp')">forksUp</a></td>
+            <td class="m-help">Moves forks to raised position.    &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.say')">say</a></td>
+            <td class="m-help">Commands the robot to say a phrase from its speakers.  &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.sendVelocity')">sendVelocity</a></td>
+            <td class="m-help">Sends left and right wheel velocity commands to the robot. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.sendVelocityOut')">sendVelocityOut</a></td>
+            <td class="m-help">sends wheel velocities to the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.shutdown')">shutdown</a></td>
+            <td class="m-help">Shuts down the ROS interface to the robot.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.stampFromTime')">stampFromTime</a></td>
+            <td class="m-help">Converts a time to a ROS timestamp.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.startLaser')">startLaser</a></td>
+            <td class="m-help">Turns on Neato laser sensor, causing it to spin.   &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.stop')">stop</a></td>
+            <td class="m-help">Commands the robot to stop moving.   &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.stopLaser')">stopLaser</a></td>
+            <td class="m-help">Turns off Neato laser sensor, causing it to stop spinning.   &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.timeFromStamp')">timeFromStamp</a></td>
+            <td class="m-help">Converts a ROS timestamp to a time.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('realRobotIF.vizUpdate')">vizUpdate</a></td>
+            <td class="m-help">Does a display update.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('realRobotIF.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

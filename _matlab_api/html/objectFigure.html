@@ -1,0 +1,389 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>objectFigure - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">objectFigure - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit objectFigure">View code for objectFigure</a></td>
+            <td class="subheader-right"><a href="matlab:doc objectFigure">Go to online doc for objectFigure</a></td>
+         </tr>
+      </table>
+      <div class="title">objectFigure</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">objectFigure</span> A class that renders a displaylist of objects in a window.
+ 
+    Objects here are graphics entities that correspond or relate to a
+    real thing, so this class is not for plotting graphs of data. More
+    precisely, the rendered objects must have a getShape() method and a
+    getPoseWrtParent() method and the data structures need to be
+    structured as they are for Shapes.
+  
+    This class is designed to play nicely with a MATLAB GUI. A figure and
+    axes will be created if they are not passed in. If they are passed
+    in, and the figure is standalone, it will be sized and positioned. If
+    the passed in axes are part of a GUI, they are left alone.
+ 
+    Animation is accomplished elsewhere by editing the XData and YData
+    in line objects that are plotted initially. In this way the native
+    capacity of MATLAB to clear and redraw a changing plot is used
+    without having to erase and redraw objects at the application
+    level.
+ 
+    This class is in 'axis auto' mode by default. You can also set the
+    viewport explicitly with the optional "limits" argument in the
+    constructor (or by calling setLimits()) or you can use the
+    scrollFigure derived class to keep a particular object (usually the
+    robot) in view.
+ 
+    Hierarchy: This class inherits from displayList and performs
+    special traversals to accomodate attachment and detachment. See the
+    discussion of displayList structure in displayedShape.showShape().
+ 
+    Events and Pick Correlation: This class provides a means
+    (editingMouseHandlers) for you to place the window in a mode where
+    users can click on objects in a window and manipulate them. This
+    was done to allow an object to be moved with your mouse while
+    visible to lidar and while the simulated robot is trying to follow
+    or avoid it. You mostly do not have to manage any of this. Just turn
+    on the handlers and click away. These are expensive so don't use
+    them all the time.
+ 
+    This class is in "hold on" state most of the time but it should
+    never become the currently selected figure unless you make that
+    happen. That should mean you can do whatever you want with other
+    MATLAB figures but if you write in this class yourself (without
+    adding to the dispay list), your content will all be erased on the
+    next draw.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('displayList')">displayList</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.objectFigure')">objectFigure</a></td>
+            <td class="m-help">creates an object figure.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.axHandle')">axHandle</a></td>
+            <td class="m-help">MATAB axes handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.do_axis_auto')">do_axis_auto</a></td>
+            <td class="m-help">MATLAB axis auto mode if on&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.do_draw_grid')">do_draw_grid</a></td>
+            <td class="m-help">Draws axis tick marks if on&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.figHandle')">figHandle</a></td>
+            <td class="m-help">MATLAB figure handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.limits')">limits</a></td>
+            <td class="m-help">MATLAB viewport limits in form [xmin xmax ymin ymax]&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.name')">name</a></td>
+            <td class="m-help">Name for this window&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.theClass')">theClass</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.theList')">theList</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.addList')">addList</a></td>
+            <td class="m-help">adds a list of objects.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.addObj')">addObj</a></td>
+            <td class="m-help">Adds a shape or a displayedShape to the display list for this window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.check')">check</a></td>
+            <td class="m-help">Checks incoming data to see if it is compatible with theClass.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.clearAll')">clearAll</a></td>
+            <td class="m-help">Removes everything in the window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.clearDefaultMotionHandler')">clearDefaultMotionHandler</a></td>
+            <td class="m-help">Removes the default mouse motion handler.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.clearEditingMotionHandler')">clearEditingMotionHandler</a></td>
+            <td class="m-help">Rmoves the editing mouse motion handler.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.close')">close</a></td>
+            <td class="m-help">Closes the window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.delObj')">delObj</a></td>
+            <td class="m-help">Deletes a shape from the display list of this window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.find')">find</a></td>
+            <td class="m-help">Finds the displayedShape corresponding to the provided plot handle or shape.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.getAxHandle')">getAxHandle</a></td>
+            <td class="m-help">Returns the MATLAB axis handle for this window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setDefaultMotionHandler')">setDefaultMotionHandler</a></td>
+            <td class="m-help">Registers the default mouse motion handler.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setDefaultMouseHandlers')">setDefaultMouseHandlers</a></td>
+            <td class="m-help">Registers default mouse handlers.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setEditingMotionHandler')">setEditingMotionHandler</a></td>
+            <td class="m-help">Registers the editing mouse motion handler.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setEditingMouseHandlers')">setEditingMouseHandlers</a></td>
+            <td class="m-help">Registers editing mouse handlers.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setLimits')">setLimits</a></td>
+            <td class="m-help">Sets the limits of the viewport. Turns off automatic zoom.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.setVisible')">setVisible</a></td>
+            <td class="m-help">Sets the visibility flag for the window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.show')">show</a></td>
+            <td class="m-help">Redraws everything in the window based on its latest shape,&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('objectFigure.testClass')">testClass</a></td>
+            <td class="m-help">Some convenient tests that can be run from the console.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('objectFigure.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

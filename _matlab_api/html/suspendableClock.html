@@ -1,0 +1,276 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>suspendableClock - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">suspendableClock - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit suspendableClock">View code for suspendableClock</a></td>
+            <td class="subheader-right"><a href="matlab:doc suspendableClock">Go to online doc for suspendableClock</a></td>
+         </tr>
+      </table>
+      <div class="title">suspendableClock</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">suspendableClock</span> A layer over the system clock that makes it suspendable.
+ 
+    This class is a layer over the system clock that allows it to be
+    started and stopped in controlled circumstances. This type of clock
+    is useful in real time control and simulation in order to be able
+    to:
+ 
+    a) start the measurement of time once set up operations have
+    finished.
+ 
+    b) make CPU cycles used to simulate something disappear from your
+    measure of elapsed time
+ 
+    This object is neither an interval timer nor a stopwatch timer,
+    both of which MATLAB already provides. You create an instance of
+    this and you "read" the time as often as you like. Typically,
+    you will never reset it but you may start and stop it very often
+    when running a simulator. More likely, the simulator will do that
+    for you and you need not care. The time it reports is relative to
+    the moment it was started so it is not "time of day" but rather is
+    the elapsed time since it was started. Under the hood, this is
+    based on tic() and toc(). 
+ 
+    Like tic() and toc(), the implementation is lightweight so there is
+    no point using the same clock for two purposes and doing fancy math
+    to make it work. You can create as many of these objects as you
+    like and start them all at a slightly different moment.
+ 
+    On the other hand, there are times when you should read THE clock
+    because there is only one purpose, controlling a robot, and all of
+    the time tags on all of the data must be absolutely consistent.
+    The raspbot robot base class creates and starts a suspendable clock
+    that you should probably treat as THE clock in your controller
+    algorithms. If you do, they will probably perform close to the same
+    in simulation as they do on the real robot even though they may be
+    running much more slowly. You can access this clock by calling the
+    toc() method on an instance of robotIF. 
+ 
+    The advance function is useful if you have calls to clock functions
+    in your code but you want to explicitly control the apparent time
+    elapsed regardless of how much time has actually elapsed. It may be
+    easier to do that than to track down and alter every clock read in
+    your code.
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.suspendableClock')">suspendableClock</a></td>
+            <td class="m-help">Construct a suspendableClock. It starts out in stopped mode.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.MATLABTimer')">MATLABTimer</a></td>
+            <td class="m-help">time base tied to the local processor&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.debug')">debug</a></td>
+            <td class="m-help">for use in conditional breakpoints&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.lastStartTime')">lastStartTime</a></td>
+            <td class="m-help">last start time (from timer)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.lastStopTime')">lastStopTime</a></td>
+            <td class="m-help">last stop time (from timer)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.lostTimeIntegral')">lostTimeIntegral</a></td>
+            <td class="m-help">integral of all periods when clock was off&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.running')">running</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.advance')">advance</a></td>
+            <td class="m-help">the time by the indicated amount. Returns current time on clock. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.isRunning')">isRunning</a></td>
+            <td class="m-help">check if clock is started&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.read')">read</a></td>
+            <td class="m-help">Returns the time elapsed since this clock was started. Works like toc().&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.start')">start</a></td>
+            <td class="m-help">Start the clock at zero. Returns current time on clock.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('suspendableClock.stop')">stop</a></td>
+            <td class="m-help">Stop the clock. Returns current time on clock.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('suspendableClock.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

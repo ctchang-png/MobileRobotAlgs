@@ -1,0 +1,99 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>helpDump - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">helpDump - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit helpDump">View code for helpDump</a></td>
+            <td class="subheader-right"><a href="matlab:doc helpDump">Go to online doc for helpDump</a></td>
+         </tr>
+      </table>
+      <div class="title">helpDump</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">helpDump</span> Command for dumping MATLAB .m file markup as help html files.
+ 
+    This class will process .m file markup and produce the standard
+    MATLAB html help files. The class is based on the undocumented and
+    unsupported MATLAB function help2html, so it may break eventually
+    if that function disappears from MATLAB.
+ 
+    You can call this as a function with <span class="helptopic">helpDump</span>(arg1,arg2,...) or as
+    a shell command with <span class="helptopic">helpDump</span> arg1 arg2. Arguments do not have to
+    be quoted 'thus'.
+ 
+    File descriptors containing the standard wildcard '*' will be
+    expanded into a list of files as you might expect. Files missing a
+    .m extension will have one added.
+ 
+    Usage:
+ 
+    <span class="helptopic">helpDump</span> file1 file2.m dumps all help markup for file1.m and file2.m
+    <span class="helptopic">helpDump</span> *.m dumps all help markup in this directory here.
+    <span class="helptopic">helpDump</span> ../*.m dumps all help markup in parent directory here.
+ 
+    The help files appear in the current working directory</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('helpDump.helpDump')">helpDump</a></td>
+            <td class="m-help">Construct an instance of this class&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('helpDump.do_strip')">do_strip</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('helpDump.markUp2Html')">markUp2Html</a></td>
+            <td class="m-help">Converts the markup in a file to its html help file&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('helpDump.processFiles')">processFiles</a></td>
+            <td class="m-help">dumps one file&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('helpDump.testClass')">testClass</a></td>
+            <td class="m-help">&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

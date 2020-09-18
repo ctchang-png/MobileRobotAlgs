@@ -1,0 +1,564 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="https://localhost:31515/static/help/includes/product/css/helpwin.css"><script type="text/javascript" src="https://localhost:31515/static/help/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://localhost:31515/static/help/includes/shared/scripts/helpservices.js"></script><title>robotIF - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">robotIF - MATLAB File Help</td>
+            <td class="subheader-left"><a href="matlab:edit robotIF">View code for robotIF</a></td>
+            <td class="subheader-right"><a href="matlab:doc robotIF">Go to online doc for robotIF</a></td>
+         </tr>
+      </table>
+      <div class="title">robotIF</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">robotIF</span> Your main interface to the robot or simulator.
+ 
+    A class which supplies functions for visualizing and interfacing to
+    a real or simulated RaspBot. Displays the robot in a window,
+    possibly in the context of walls as well, and its lidar data, if any.
+ 
+    This class now supports the common component of graphics that makes
+    sense for simulation and real robots. No robot communications take
+    place here. That happens in derived classes.
+ 
+    Commands: All robot commands and feedback messaages are duplicated
+    here and transferred to and from the real or simulated robot
+    untouched. This is done so that you do not have to keep handles to
+    numerous objects around. Just create an instance of this class and
+    you can treat it like both your robot and your human interface.
+ 
+    Timers: In both simulation and on the real robot, an interval timer
+    is (by default but) optionally used. It will force regular updates
+    of the display (in both cases) and of data in the case of
+    simulation. That can be expensive so you also have the option of
+    not using the timer and calling manualUpdate() in your main loop or
+    whenever you want an update of simulated data and graphics display
+    to occur.
+ 
+    The real robot will shut itself down if the battery is low. To
+    mimic that here, the interface shuts down if you do nothing for a
+    few minutes. That will train you for efficient use of the battery on
+    the real robot.
+ 
+    Real Time Clock: In your control algorithms, you can use the toc()
+    function here to read the time that has elapsed since the robot
+    interface was created. The underlying "suspendable" clock makes
+    time stand still inside the simulator so those computations do not
+    affect your real-time controller. If you use this toc() on a real
+    robot, it is just MATLAB toc() so you can use it in both cases and
+    your code will work without changes.
+ 
+    Sound: To help you notice when the lidar is on, a low level very
+    short click sound can be played for every n (=2) frames displayed.
+    This is expensive so the default is off. Fork motions also have
+    associated sounds as do attempts to pick up pallets. You can use
+    the 'say' command to create other useful sounds for yourself.
+ 
+    More on timers: MATLAB's timer objects exist outside the
+    application in the scope of MATLAB itself so the timer is not
+    deleted (like all other objects) when your application script
+    exits. That also means that the data (including this object) that
+    it references is not deleted. That leads to the objects created by
+    this object - notably including figure 99 - not only being persistent
+    but you cannot delete the figure until the timer is deleted. One
+    ultimate way to do that is to call delete(timerfindall) but it is
+    more graceful to call rIF.stopTimer() if you just want to inspect
+    the window. In the GUI, closing figure 99 by clicking on its x
+    should work most of the time and it is a pretty clean operation
+    leaving nothing else important lying around in memory. As things
+    are setup now, deleting figure 99 will delete the timer and vice versa.
+ 
+    Numerous measures are in place to prevent the bad effects of enduring
+    timers. (1) This class deletes the old timer whenever a new instance
+    is created. In this way, only one instance can exist at a time. You
+    can also use the togglePlot function, if you like, to make the
+    persistent simulation window disappear when no application is
+    running. Just call togglePlot at the very end of your program. (2)
+    An onCleanup object is created in the scope of the base workspace
+    so that when the workspace is cleared (for example when clear all
+    is called) the destructor for this object is called and that will
+    delete the timer. (3) a stopTimer function is provided. That makes
+    it possible to pan and zoom the simulator window and to close its
+    window. If your window is closed and your script has finished, you
+    still have the option to call <span class="helptopic">robotIF</span>.deleteOldTimers() from the
+    console.
+ 
+    Figure 99 is set up so that you cannot draw in it. This is done
+    because drawing in it is likely to delete the existing display list
+    of objects in the window with disasterous results. The primitves
+    used to create this window are all available to you so you can use
+    the same methods to create your own windows.
+     
+    Sept 2013: Original version for Neatos by Mike Shomin and Al Kelly
+    Sept 2016: Modified version for RaspBots and ROS by Dane Bennington
+    Sept 2017: Additions for Audio and Forks by Ariana Keeling
+    June 2020: Redesign and numerous bug fixes by Al Kelly
+ 
+    $Author: AlonzoKelly $  $Date: 2020/07/15 14:00:00 $ $Revision: 2.0 $
+    Copyright: Alonzo Kelly 2020</pre></div><!--after help --><!--demo--><div class="footerlinktitle">Published output in the Help browser</div><div class="footerlink">
+       <a href="matlab:showdemo robotIF">showdemo robotIF</a></div>
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:helpwin('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.robotIF')">robotIF</a></td>
+            <td class="m-help">Creates an instance of this class.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.do_lidar_sound')">do_lidar_sound</a></td>
+            <td class="m-help">lidar sound playback&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.max_vel')">max_vel</a></td>
+            <td class="m-help">max wheel velocity&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.rob')">rob</a></td>
+            <td class="m-help">robot being visualized&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.scr_fig')">scr_fig</a></td>
+            <td class="m-help">scrolling figure for drawing robot&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.addObjects')">addObjects</a></td>
+            <td class="m-help">Adds object (shapes) to the display and world model.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.createFigure')">createFigure</a></td>
+            <td class="m-help">Creates the main simulation window. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.createTimer')">createTimer</a></td>
+            <td class="m-help">Creates the persistent timer. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.deleteOldTimers')">deleteOldTimers</a></td>
+            <td class="m-help">Deletes old timer(s) left in memory.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.do_manual')">do_manual</a></td>
+            <td class="m-help">Returns the value of the manual update flag.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.do_sim')">do_sim</a></td>
+            <td class="m-help">Returns the value of the simulation flag.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.encoders')">encoders</a></td>
+            <td class="m-help">Returns the most recent encoder message.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.forksDown')">forksDown</a></td>
+            <td class="m-help">Lowers the forks.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.forksUp')">forksUp</a></td>
+            <td class="m-help">Lifts the forks.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.ge')">ge</a></td>
+            <td class="m-help">>= (GE)   Greater than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.gt')">gt</a></td>
+            <td class="m-help">> (GT)   Greater than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.killTimer')">killTimer</a></td>
+            <td class="m-help">Stops and deletes the persistent timer. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.laser')">laser</a></td>
+            <td class="m-help">Returns the most recent laser laser.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.le')">le</a></td>
+            <td class="m-help"><= (LE)   Less than or equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.localTimerFcn')">localTimerFcn</a></td>
+            <td class="m-help">Called by the timer every time it fires. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.lt')">lt</a></td>
+            <td class="m-help">< (LT)   Less than relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.manualUpdate')">manualUpdate</a></td>
+            <td class="m-help">Performs housekeeping and then calls the same update called by the timer.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.palletAttach')">palletAttach</a></td>
+            <td class="m-help">Attaches the pallet to the robot and indicates so on screen.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.palletRelease')">palletRelease</a></td>
+            <td class="m-help">Releases the pallet from the robot and indicates so on screen.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.plot')">plot</a></td>
+            <td class="m-help">Draws the robot in a window in the context of other objects and data.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.robotIF_closereq')">robotIF_closereq</a></td>
+            <td class="m-help">Cleans up when you close the main window&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.say')">say</a></td>
+            <td class="m-help">Speaks the supplied text string.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.sendVelocity')">sendVelocity</a></td>
+            <td class="m-help">Sends speed commands to the robot wheels.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.setAxes')">setAxes</a></td>
+            <td class="m-help">sets the axes (viewport) of the main window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.setLidarSound')">setLidarSound</a></td>
+            <td class="m-help">Turns the lidar clicks on and off.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showForksDown')">showForksDown</a></td>
+            <td class="m-help">Changes the color of the forks to show they are down.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showForksUp')">showForksUp</a></td>
+            <td class="m-help">Changes the color of the forks to show they are up.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showPalletDown')">showPalletDown</a></td>
+            <td class="m-help">Changes pallet color to show it is dropped.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showPalletUp')">showPalletUp</a></td>
+            <td class="m-help">Changes pallet color to show it is lifted.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showStartLaser')">showStartLaser</a></td>
+            <td class="m-help">Starts laser animation.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.showStopLaser')">showStopLaser</a></td>
+            <td class="m-help">Stops laser animation.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.shutdown')">shutdown</a></td>
+            <td class="m-help">Shuts down the robot interface.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.startLaser')">startLaser</a></td>
+            <td class="m-help">Starts the laser rotation and data stream.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.startTimer')">startTimer</a></td>
+            <td class="m-help">Starts (or restarts) the persistent timer. &nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.stop')">stop</a></td>
+            <td class="m-help">Sends zero speed commands to the robot wheels.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.stopLaser')">stopLaser</a></td>
+            <td class="m-help">Stops the laser rotation and data stream.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.stopTimer')">stopTimer</a></td>
+            <td class="m-help">Stops (or pauses) the persistent timer.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Static 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.testClass')">testClass</a></td>
+            <td class="m-help">Simple test routines. For this one, you have to&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.timerIsRunning')">timerIsRunning</a></td>
+            <td class="m-help">Returns true if the timer is running.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.toc')">toc</a></td>
+            <td class="m-help">Reads the time on the suspendable clock.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.toggleVisibility')">toggleVisibility</a></td>
+            <td class="m-help">Toggles visibility of the main simulation window.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">protected 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:helpwin('robotIF.tryPalletLift')">tryPalletLift</a></td>
+            <td class="m-help">Does.&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:helpwin('robotIF.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>
