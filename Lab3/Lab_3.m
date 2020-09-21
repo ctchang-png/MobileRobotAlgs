@@ -3,7 +3,7 @@ clearvars
 clear encoderEventListener
 clc
 clf
-rIF = robotIF(101, true);
+rIF = robotIF(sum(uint8(char("Fido"))), true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 pause(1.0) 
 %Trajectory Constants
@@ -107,7 +107,6 @@ while t_elapsed < T_f
         k_vl = (prevVelData(1)+eps)/(V_l_est + eps);
         k_vr = (prevVelData(2)+eps)/(V_r_est + eps);
         if abs(k_vl) < 2 && abs(k_vr) < 2
-            disp(plot_idx)
             V_l = V_l * k_vl;
             V_r = V_r * k_vr;
         end
@@ -146,6 +145,6 @@ if ~doRealTimePlotting
     plot(est_logsX(1:plot_idx), est_logsY(1:plot_idx), 'k-')
     hold off
 end
-norms = sqrt((pred_logsX - est_logsX).^2 + (pred_logsY - est_logsY).^2);
+norms = sqrt((pred_logsX - real_logsX).^2 + (pred_logsY - real_logsY).^2);
 avg_err = sum(norms) / nnz(norms) * 100;
 fprintf("Average error: %2.2f cm\n", avg_err)
