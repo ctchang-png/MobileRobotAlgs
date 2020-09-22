@@ -3,7 +3,8 @@ clearvars
 clear encoderEventListener
 clc
 clf
-rIF = robotIF(sum(uint8(char("Fido"))), true);
+num = sum(uint8(char("Fido")));
+rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 pause(1.0) 
 %Trajectory Constants
@@ -51,7 +52,6 @@ t_elapsed = -1;
 while t_elapsed < T_f
     %Init
     if ~initialized
-        t0 = tic;
         prevEncoderData = [0, 0, 0]; %[L, R, T]
         prevVelData = [0, 0]; %[V_l_targ, V_r_targ]
         X_est = [0, 0, 0];
@@ -59,19 +59,21 @@ while t_elapsed < T_f
         initialized = true;
         s = 0;
         rIF.sendVelocity(0, 0)
-        t_start = tic;
-        t_0 = t_start;
+        %t_start = tic;
+        t_start = rIF.toc();
+        t_0 = 0;
     else
         %Housekeeping
         %clc
         
         %Time Sensitive
-        t_elapsed = toc(t_start);
+        %t_elapsed = toc(t_start);
+
+        t_elapsed = rIF.toc() - t_start;
         dt_computer = double(t_elapsed - t_0);
         t_0 = t_elapsed;
         encoderData = encoderDataGetter;
        
-        
         %Pose Estimator
         d_encoder = encoderData - prevEncoderData;
         dl = d_encoder(1);
