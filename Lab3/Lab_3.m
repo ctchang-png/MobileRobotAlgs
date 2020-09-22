@@ -31,8 +31,8 @@ est_logsX = zeros(plot_n, 1);
 est_logsY = zeros(plot_n, 1);
 real_logsX = zeros(plot_n, 1);
 real_logsY = zeros(plot_n, 1);
-xlim([-0.5 0.5]);
-ylim([-0.5 0.5]);
+xlim([-0.6 0.6]);
+ylim([-0.6 0.6]);
 hold on
 predPlt = plot(pred_logsX, pred_logsY, 'g-');
 estPlt = plot(est_logsX, est_logsY, 'k-');
