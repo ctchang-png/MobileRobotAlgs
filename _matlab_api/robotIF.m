@@ -73,7 +73,7 @@ classdef robotIF < handle
     %
     %   Figure 99 is set up so that you cannot draw in it. This is done
     %   because drawing in it is likely to delete the existing display list
-    %   of objects in the window with disasterous results. The primitves
+    %   of objects in the window with disasterous results. The primitives
     %   used to create this window are all available to you so you can use
     %   the same methods to create your own windows.
     %    
@@ -144,6 +144,23 @@ classdef robotIF < handle
         %temporarily comment out the abstract functions declared in any
         %superclasses to test this.
         %
+            robot = simRobotIF("test");
+            rIF = robotIF(robot);
+            toggleVisibility(rIF);
+            
+            % These 4 will just draw the forks and the lidar dot and change their color.
+            rIF.showForksUp();
+            pause(2);
+            
+            rIF.showForksDown();
+            pause(2);
+            
+            rIF.showStartLaser();
+            pause(2);
+            
+            rIF.showStopLaser()
+            pause(2);
+            
         end
          
         function robotIF_closereq(fig,~) % 2nd arg is callback data
@@ -153,6 +170,11 @@ classdef robotIF < handle
         %   will delete any active timers before closing and deleting the
         %   window.
         %
+            fprintf("robotIF: Closing main window. Killing timers if any\n");
+            robotIF.deleteOldTimers();
+            fig.set('HandleVisibility','on'); % Just in case, so we can delete it
+            %delete(fig.UserData) % deletes the robotIF; Probably cannot delete yourself
+            delete(fig);
         end
         
         function deleteOldTimers()
@@ -163,6 +185,10 @@ classdef robotIF < handle
         %   created them if not deleted in the app. Having more than one
         %   active timer breaks everything.
         %
+            timers = timerfind('Tag','raspbot_sim');
+            if(~isempty(timers))
+                stop(timers); delete(timers);
+            end
         end
     end
         
@@ -196,6 +222,69 @@ classdef robotIF < handle
             %   e) Starts the interval timer (if not in manual mode).
             %
             %
+            do_sim = true;
+
+            if(nargin == 1 && islogical(varargin{1}))
+                do_sim = varargin{1}; % optional id argument is not present
+            end
+                
+            if(nargin >=1) 
+                if(islogical(varargin{1})) 
+                    do_sim = varargin{1}; % optional id argument is not present
+                elseif(isnumeric(varargin{1}) && islogical(varargin{2}))
+                    do_sim = varargin{2}; % optional id argument is present
+                end
+            end
+                
+            if(do_sim)
+                rIF.rob = simRobotIF(varargin{:});
+            else
+                rIF.rob = realRobotIF(varargin{:});
+            end
+            
+            % create the figure / display list
+            createFigure(rIF,rIF.rob.initial_pose);
+                        
+            % Set viewport for real robot.
+            if(~do_sim)
+                rIF.setAxes([-1.5 1.5 -1.5 1.5]); % set viewport size. It will still track
+                set(rIF.figHandle,'visible','off');
+            end
+            
+            % Start clock for sim. Must precede start of
+            % persistent timer.
+            fprintf('robotIF: Starting suspendable clock\n'); % this should happen only once per run
+            rIF.rob.sus_clock.start();
+                        
+            % Start inactivity stopwatch. Must precede start of
+            % persistent timer.
+            rIF.last_cmd_stop_watch = tic();
+            
+            % Create the persistent timer, if needed
+            if ~rIF.rob.do_manual
+                if(do_sim)
+                    rIF.createTimer(1/rIF.sim_freq);
+                else
+                    rIF.createTimer(1/rIF.viz_freq);
+                end
+                rIF.startTimer();
+            end
+            
+            % The following code creates a variable named "cleanup_object"
+            % in the scope of the MATLAB base and then associates
+            % rIF.killTimer with that variable as the onCleanup function. The
+            % net effect of this is that when the command dialog deletes
+            % this object (which unfortunately is not when the application
+            % exits), the killTimer function will be called and the timer is
+            % then deleted in the killTimer function. This means a "clear
+            % all" will kill the timer and you will not have to issue a
+            % delete(timerfindall) to kill it. BTW, when the timer is
+            % running, it continues redrawing the window so you cannot pan
+            % and zoom the sim window when it is running. The robotIF
+            % destructor is NOT called without this because the persisent
+            % timer points to it!!!
+            clnup = onCleanup(@() killTimer(rIF)); 
+            assignin('base', 'cleanup_object', clnup);
         end
         
         function setAxes(rIF,axes)
@@ -203,6 +292,7 @@ classdef robotIF < handle
             %
             %   setAxes([xmin xmax ymin ymax]) is the syntax.
             %
+            rIF.scr_fig.setLimits(axes);
         end
         
         function addObjects(rIF,objs)
@@ -212,6 +302,10 @@ classdef robotIF < handle
             %   display and, if in simulation mode, to the simulation world
             %   model.
             %
+            rIF.scr_fig.addObj(objs);
+            if(rIF.rob.do_sim)
+                rIF.rob.addObjects(objs); % for rayCasting
+            end
         end
      
         function manualUpdate(rIF)
@@ -231,6 +325,25 @@ classdef robotIF < handle
             %
             
             % exit if timer is on. warn once.
+            if rIF.timerIsRunning() 
+                if ~rIF.manual_ignored ; fprintf("Calls to manualUpdate ignored when timered\n"); end
+                rIF.manual_ignored = true;
+                if( rIF.rob.do_sim && ~rIF.rob.do_suspended_clock_sim)
+                    fprintf('Updates may be faster than intended.\n');
+                    fprintf('Turn on clock suspension for correct timing of manual sim\n');
+                end
+                return;
+            end
+            
+            % We got this far, so timer is not running. Initialize on first entry
+            t = rIF.rob.sus_clock.read();
+            if ~rIF.man_inited
+                rIF.last_man_time = t;
+                rIF.man_inited = true;
+            end
+                        
+            % Call update fcn
+            rIF.localTimerFcn(rIF,0);
         end
         
         function killTimer(rIF)
@@ -241,6 +354,15 @@ classdef robotIF < handle
             %   yourself is you have an instance handle. Otherwise, use
             %   robotIF.deleteOldTimers().
             %
+            if(isvalid(rIF.viz_master_timer))
+                disp("robotIF: deleting persistent timer");
+                stop(rIF.viz_master_timer);
+                delete(rIF.viz_master_timer);
+            end
+            if(ishandle(rIF.figHandle))
+                rIF.figHandle.set('HandleVisibility','on'); % Just in case, so we can delete it
+                delete(rIF.scr_fig); % delete figure 99 and its display list
+            end
         end
         
         function stopTimer(rIF)
@@ -254,6 +376,8 @@ classdef robotIF < handle
             % want to stop AND delete the timer, or close the window, or
             % call killTimer, or call deleteOldTimers().
             %
+            fprintf('robotIF: stopping persistent timer\n');
+            stop(rIF.viz_master_timer); %stop or pause the timer
         end
         
         function startTimer(rIF)
@@ -262,6 +386,8 @@ classdef robotIF < handle
             %   rIF.startTimer() This can be  useful to restart simulation
             %   if you stopped it for some reason.
             %
+            fprintf('robotIF: starting timer\n');
+            start(rIF.viz_master_timer); %start or restart the timer
         end
         
         function toggleVisibility(rIF)
@@ -272,6 +398,16 @@ classdef robotIF < handle
             %   dangerous if you assume you know the sttae of the window
             %   and it is the opposite because it was not deleted last time.
             %
+            if ishandle(rIF.ah)
+                %hfig = get(get(rIF.ph(1,'parent'),'parent');
+                hState = get(rIF.figHandle,'visible');
+                switch hState
+                    case 'on'
+                        set(rIF.figHandle,'visible','off');
+                    case 'off'
+                        set(rIF.figHandle,'visible','on');
+                end
+            end
         end
         
         function setLidarSound(rIF,val)
@@ -279,6 +415,7 @@ classdef robotIF < handle
             %
             %   rIF.setLidarSound(val) Enables the sounds if val=true;
             %            
+            rIF.do_lidar_sound = val;
         end
         
         function elapsedTime = toc(rIF)
@@ -290,6 +427,7 @@ classdef robotIF < handle
             %   simulated robot but otherwise, the clock behaves like
             %   toc(). You cannot call tic() on this clock.
             %
+            elapsedTime = rIF.rob.sus_clock.read();
         end
             
         %   Following functions are provided to present one interface to the
@@ -304,6 +442,7 @@ classdef robotIF < handle
             %
             %   dS = rIF.do_sim() 
             %
+            dS = rIF.rob.do_sim;
         end
         
         function dM = do_manual(rIF)
@@ -311,6 +450,7 @@ classdef robotIF < handle
             %
             %   dM = rIF.do_manual() 
             %
+            dM = rIF.rob.do_manual;
         end
     
         function enc = encoders(rIF)
@@ -318,6 +458,7 @@ classdef robotIF < handle
             %
             %   enc = rIF.encoders() or just rIF.encoders
             %
+            enc = rIF.rob.encoders;
         end
         
         function lS = laser(rIF)
@@ -325,6 +466,7 @@ classdef robotIF < handle
             %
             %   lS = rIF.laser() or just rIF.encoders
             %
+            lS = rIF.rob.laser;
         end
         
         function shutdown(rIF)
@@ -332,6 +474,7 @@ classdef robotIF < handle
             %
             %   rIF.shutdown() 
             %
+            rIF.rob.shutdown();
         end
         
         function sendVelocity(rIF,v_l, v_r)
@@ -340,6 +483,8 @@ classdef robotIF < handle
             %   rID.sendVelocity(v_l, v_r) Where v_l is left wheel velocity
             %   in m/s etc.
             %
+            rIF.rob.sendVelocity(v_l, v_r);
+            rIF.last_cmd_stop_watch = tic();
         end
         
         function stop(rIF)
@@ -347,18 +492,26 @@ classdef robotIF < handle
             %
             %   rIF.stop()  Is much more reliable than sendVelocity(0,0).
             %
+            rIF.rob.stop();
+            rIF.last_cmd_stop_watch = tic();
         end
         function startLaser(rIF)
             %startLaser Starts the laser rotation and data stream.
             %
             %   rIF.startLaser() 
             %
+            rIF.rob.startLaser();
+            rIF.showStartLaser();
+            rIF.last_cmd_stop_watch = tic();
         end
         function stopLaser(rIF)
             %stopLaser Stops the laser rotation and data stream.
             %
             %   rIF.stopLaser() 
             %
+            rIF.rob.stopLaser();
+            rIF.showStopLaser();
+            rIF.last_cmd_stop_watch = tic();
         end
         function forksUp(rIF)
             %forksUp Lifts the forks.
@@ -367,6 +520,20 @@ classdef robotIF < handle
             %   is sufficiently well position to be picked up. If so
             %   lifts and attaches the pallet to the forks. 
             %
+            rIF.rob.forksUp();
+            if(rIF.rob.do_sim)
+                % get closest pallet in the world model
+                frkToWld = robotModel.forkCenterPose(rIF.rob.sim_motion.pose);
+                % NOTE: The robot is not in the world list, so this will not
+                % return it.
+                oB = rIF.rob.world_list.getClosestObjectToPose(frkToWld,palletSailModel.hole_width);
+                if(~isempty(oB))
+                    liftError = pose.poseError(frkToWld,oB.getMatToWorld(),palletSailModel.hole_width);
+                    rIF.tryPalletLift(oB,liftError); % Take pallet off forks on screen
+                end
+            end
+            rIF.showForksUp();
+            rIF.last_cmd_stop_watch = tic();
         end
         
         function forksDown(rIF)
@@ -374,6 +541,10 @@ classdef robotIF < handle
             %
             %   rIF.forksDown() In simulation, will also detach an attached pallet. 
             %
+            rIF.rob.forksDown();
+            rIF.palletRelease(); % Take pallet off forks on screen
+            rIF.showForksDown();
+            rIF.last_cmd_stop_watch = tic();
         end
         
         function say(rIF,str)
@@ -381,6 +552,8 @@ classdef robotIF < handle
             %
             %   rIF.say(str) 
             %
+            rIF.rob.say(str);
+            rIF.last_cmd_stop_watch = tic();
         end
         
     end
@@ -392,6 +565,21 @@ classdef robotIF < handle
             %   rIF.createTimer(timerPeriod) This function is called by the
             %   constructor.
             %
+            if(~rIF.rob.do_manual)
+                rIF.viz_master_timer = timer(); % this is a call to the MATLAB timer constructor !
+                rIF.viz_master_timer.Tag = 'raspbot_sim';
+                rIF.viz_master_timer.ExecutionMode = 'fixedRate';
+                % Queue mode is not supposed to interrupt itself but it does
+                % seem to happen. Drop mode is probably best because it
+                % should prevent the sim thread using the entire CPU.
+                %rIF.viz_master_timer.BusyMode = 'queue';
+                rIF.viz_master_timer.BusyMode = 'drop';
+                rIF.viz_master_timer.TimerFcn = @rIF.localTimerFcn;
+                %rIF.viz_master_timer.ErrorFcn = @rIF.ifTimerError;
+                s = warning('off', 'MATLAB:TIMER:RATEPRECISION');
+                rIF.viz_master_timer.Period = timerPeriod;
+                warning(s);
+            end
         end
                 
 %         function ifTimerError(~,~,~)
@@ -415,6 +603,45 @@ classdef robotIF < handle
             %   here to make this return immediately if the another thread
             %   in the timer is executing.
             %
+            if(rIF.in_update)
+                %fprintf("A previous update was interrupted\n");
+                return;
+            else
+                rIF.in_update=true;
+            end
+            
+            % Now call the user's timer function. The exception handler
+            % produces much better error messages than none.
+            try
+                if(rIF.rob.do_sim)
+                    rIF.rob.simUpdate(rIF,ev);
+                else
+                    rIF.rob.vizUpdate(rIF,ev);
+                end
+            catch me
+                disp( getReport( me, 'extended', 'hyperlinks', 'on' ) );
+                rIF.killTimer();
+            end
+            
+            % Update display occasionally but not every data frame. In real
+            % robot case, the timer is already 5 times slower, so there is
+            % no need to count.
+            if(~rIF.rob.do_sim || rIF.plot_cnt == rIF.plot_cnt_period)
+				rIF.plot();
+				rIF.plot_cnt = 0;
+            end
+            rIF.plot_cnt  = rIF.plot_cnt+1;
+            
+            % Check for inactivity
+            if(toc(rIF.last_cmd_stop_watch) > rIF.max_time) % shutdown if we are doing nothing
+                fprintf("robotIF: Robot shutdown. No activity for %6.3f seconds\n",rIF.max_time);
+                str = sprintf("Turn off robot to save battery\n"); 
+                rIF.say(str);
+                beep();
+                rIF.rob.shutdown();
+                rIF.killTimer();
+            end
+            rIF.in_update=false;
         end
         
         function isRunning = timerIsRunning(rIF)
@@ -423,6 +650,7 @@ classdef robotIF < handle
             %   isRunning = rIF.timerIsRunning()
             %
             
+            isRunning = rIF.viz_master_timer ~= 0 && strcmp(rIF.viz_master_timer.Running,'on');
         end
 
         function createFigure(rIF,robot_pose)
@@ -434,6 +662,53 @@ classdef robotIF < handle
             
 %             f = figure('Name','Robot','visible','off',...
 %                 'CloseRequestFcn',@robotIF.robotIF_closereq);
+            f = figure(99);
+            f.set('Name','Raspbot','CloseRequestFcn',@robotIF.robotIF_closereq);
+            rIF.figHandle = f; 
+            f.UserData = rIF;
+            clf(f); % clears any remnants if persistent figure is reused from last run
+            f.WindowStyle = 'docked';
+            rIF.ah = gca();
+            %rIF.ah = f.CurrentAxes; % does not work unless window is visible
+            axis(rIF.ah,'equal');
+           
+            rIF.scr_fig = scrollFigure('Raspbot',rIF.ah);
+            f.set('visible','off'); % now TURN IT OFF until something is drawn
+            
+            % add robot shape to window display list
+            rIF.rS = raspbotShape(true,robot_pose); % true means with forks
+            robot_plot_props = {'LineStyle','-','LineWidth',2,'Color',[.02 .3 .05]};
+            forks_plot_props = {'LineStyle','-','LineWidth',2,'Color',[.02 .3 .05]}; % forks down color          
+            both_plot_props = {robot_plot_props,forks_plot_props};
+            rIF.rSdS = rIF.scr_fig.addObj(rIF.rS,both_plot_props{:});
+            
+            % add a circle shape to represent the light emitted on the
+            % lidar. There is no such light on the real robot but it
+            % represents the spinning nicely.
+            rIF.dot_rad = 0.002; % 2 mm radius
+            rIF.dot_orb = robotModel.laser_rad - 3.0*rIF.dot_rad; % orbit radius
+            dot_pose = [rIF.dot_orb; 0; 0];
+            rIF.dS = circleShape(rIF.dot_rad,robot_pose); % 2 mm radius
+            rIF.dSdS = rIF.scr_fig.addObj(rIF.dS,'LineStyle','-','LineWidth',2,'Color',[.02 .3 .05]); % forks down color  
+            rIF.rS.attach(rIF.dS); % attach dot to robot
+            rIF.dS.setPoseWrtParent(dot_pose);
+            
+            % add point cloud shape to window display list
+            ranges = zeros(360,1);
+            rIF.rI = rangeImageShape(ranges);
+            if(rIF.rob.do_sim)
+                rIF.rI.setPoseAndUpdate(rIF.rob.laser_scan_pose);
+            else
+                rIF.rI.setPoseAndUpdate(rIF.rob.robot_pose); % real robot's have no laser_pose
+            end
+            rIF.rIdS = rIF.scr_fig.addObj(rIF.rI,'r.','MarkerSize',12);
+            rIF.rIdS.setVisible('off'); % turn it off until we have data
+            
+            % open laser sound file to reduce overhead
+            soundFile = "pop.wav";
+            [rIF.lidar_sound_y,rIF.lidar_sound_Fs] = audioread(soundFile);
+            
+            f.set('HandleVisibility','callback'); % allows acccess in callbacks
         end
         
         function plot(rIF)
@@ -445,6 +720,81 @@ classdef robotIF < handle
             
             %if(nargin == 3); laser_pose = robot_pose; end % default laser pose is robot pose.
             % get out if there is no window to draw in
+            if ~ishandle(rIF.ah); return; end
+            
+            % for simulator, get lidar pose. Otherwise, its same as robot
+            robot = rIF.rob;
+            if(rIF.rob.do_sim)
+                robot_pose = rIF.rob.sim_motion.pose;
+                % This laser pose eliminates jitter in simulator displays because the
+                % robot often has moved past where the lidar image was generated.
+                laser_pose = rIF.rob.laser_scan_pose;
+            else
+                robot_pose = rIF.rob.robot_pose;
+                laser_pose = robot_pose;
+            end
+            % first call to plot turns the window on. Every other one
+            % leaves it on. If walls are added after the robot is created,
+            % the figure will show just the robot until the walls are
+            % added and then it will resize automatically if axis is auto.
+            set(rIF.figHandle,'visible','on'); 
+            % Set the robot pose to the most recent
+            rIF.rS.setPoseAndUpdate(robot_pose);
+            if(rIF.anim_laser)
+                % The lidar pose is updated only when the data is new.
+                lidar_time = raspbot.timeFromStamp(robot.laser.LatestMessage.Header.Stamp);
+                if(lidar_time > rIF.last_lidar_time) % plot only if data is new
+                    rIF.rI.setPoseAndUpdate(laser_pose); % point cloud is in robot coordinates
+                    ranges = robot.laser.LatestMessage.Ranges;
+                    rIF.rI.setFilters(1,true); % no skip, do clean
+                    rIF.rI.setRanges(ranges);
+                    rIF.last_lidar_time = lidar_time;
+                    rIF.rIdS.setVisible('on');
+                else
+                    % Turn off image so that dots do not lag robot. 
+                    if(rIF.rob.do_sim)
+                        rIF.rIdS.setVisible('off'); % do this only in simulation. Real may have no walls.
+                    end
+                end
+
+            end
+            % Animate lidar dot
+            if(rIF.anim_laser)
+                lidar_freq = 2.0; % rotate twice per sec
+                dot_time = robot.sus_clock.read();
+                dot_ang = 2*pi*lidar_freq*dot_time;
+                dot_pose = [rIF.dot_orb*cos(dot_ang); rIF.dot_orb*sin(dot_ang); 0];
+                rIF.dS.setPoseWrtParent(dot_pose);
+            end
+            % Show it all
+            rIF.scr_fig.show();
+            
+            % This visibility of lidar switch is done because it is
+            % less frequent than robot rendering so the robot drives past it. The
+            % compromize is to turn lidar display off unless it is
+            % current. 
+            if(rIF.rIdS.getVisible())
+                if(rIF.do_lidar_sound && rIF.lidar_sound_cnt >= 2) % 1 = every visible frame
+                    sound(rIF.lidar_sound_y,rIF.lidar_sound_Fs);
+                    rIF.lidar_sound_cnt = 0;
+                end
+                rIF.lidar_sound_cnt = rIF.lidar_sound_cnt+1;
+            end
+        
+            drawnow; % this flushes event queue
+            
+            % The following commented out "hold off' turned out to be a
+            % disastrous subtle bug, so leave it commented out. Its left
+            % here to remind you not to do this. When the hold is off any
+            % plotting to the window will erase everything in it. When the
+            % fig99 handle is returned by gcf() or its axes by gca(), users
+            % can trash the plothandles in all the graphics objects !!!! by
+            % simply drawgin something in the window by mistake. With hold
+            % on all the time, they can still draw in the window, but they
+            % can also call hold off any time themselves and delete
+            % everything. The moral is the the handle visibility for figure
+            % 99 has to be off.
+            %hold(rIF.ah,'off');
         end
         
         function tryPalletLift(rIF,pallet,liftError)
@@ -456,6 +806,18 @@ classdef robotIF < handle
             %   syou were not tryiung to pick something up. If < 1X picks it
             %   up and tells you. Otherwise, announces failure.
             %            
+            if(liftError > palletSailModel.pickup_err_thresh*10) % assume you were not even trying
+                return;
+            elseif(liftError < palletSailModel.pickup_err_thresh)
+                % attach the pallet !
+                rIF.palletAttach(pallet);
+                str = sprintf("Gotcha. Error was %3.1f cm",liftError*100); 
+                rIF.say(str);
+            else
+                str = sprintf("Missed it by %3.1f cm",liftError*100);
+                rIF.say(str);
+                rIF.pS = [];
+            end
         end
         
         function palletAttach(rIF,pallet)
@@ -463,6 +825,10 @@ classdef robotIF < handle
             %
             %   rIF.palletAttach(pallet) 
             %
+            rIF.rS.attach(pallet);
+            rIF.pS = pallet; % remember shape handle to put it back on floor
+            rIF.pSdS = rIF.scr_fig.find(rIF.pS); % remember dispShape handle to change color back
+            rIF.showPalletUp();
         end
     
         function palletRelease(rIF)
@@ -470,6 +836,10 @@ classdef robotIF < handle
             %
             %   rIF.palletRelease() 
             %
+            if( ~isempty(rIF.pS)) % if we have a pallet on the forks
+                rIF.rS.detach(rIF.pS); % put in on the ground
+                rIF.showPalletDown(); % change its color back
+            end
         end
         
         function showForksUp(rIF)
@@ -477,6 +847,12 @@ classdef robotIF < handle
             %
             %   rIF.showForksUp() 
             %
+            rIF.rSdS.setPlotSpec(2,'LineStyle','-','LineWidth',2,'Color',[.8  .3 .05]);
+            rIF.rSdS.showShape();
+        
+            soundFile = "forksUp.wav";
+            [y,Fs] = audioread(soundFile);
+            sound(y,Fs);
         end
         
         function showForksDown(rIF)
@@ -484,6 +860,12 @@ classdef robotIF < handle
             %
             %   rIF.showForksDown() 
             %
+            rIF.rSdS.setPlotSpec(2,'LineStyle','-','LineWidth',2,'Color',[.02  .3 .05]);
+            rIF.rSdS.showShape();
+            
+            soundFile = "forksDown.wav";
+            [y,Fs] = audioread(soundFile);
+            sound(y,Fs);
         end
         
         function showStartLaser(rIF)
@@ -491,6 +873,10 @@ classdef robotIF < handle
             %
             %   rIF.showStartLaser() 
             %
+            rIF.dSdS.setPlotSpec('LineStyle','-','LineWidth',2,'Color',[.8  .3 .05]);
+            %rIF.scr_fig.showShape(rIF.dSdS);
+            rIF.dSdS.showShape();
+            rIF.anim_laser = true;
         end
         
         function showStopLaser(rIF)
@@ -498,6 +884,14 @@ classdef robotIF < handle
             %
             %   rIF.showStopLaser() 
             %
+            rIF.dSdS.setPlotSpec('LineStyle','-','LineWidth',2,'Color',[.02  .3 .05]);
+            %rIF.scr_fig.showShape(rIF.dSdS);
+            rIF.dSdS.showShape();
+            rIF.anim_laser = false;
+%             if(rIF.audio_player.isplaying())
+%                 rIF.audio_player.stop(); % does not seem to do anything
+%                 delete rIF.audio_player; % this works though - NIOPE
+%             end
         end
        
         function showPalletUp(rIF)
@@ -505,6 +899,9 @@ classdef robotIF < handle
             %
             %   rIF.showPalletUp() 
             %
+            rIF.pSdS.setPlotSpec('LineStyle','-','LineWidth',2,'Color',[.8  .3 .05]);
+            %rIF.scr_fig.showShape(rIF.pSdS);
+            rIF.pSdS.showShape();
         end
         
         function showPalletDown(rIF)
@@ -513,6 +910,9 @@ classdef robotIF < handle
             %   rIF.showPalletDown() 
             %
             %rIF.pSdS.setPlotSpec(palletSailShape.plot_props{:}); % can't figure out why this does not work
+            rIF.pSdS.setPlotSpec('LineStyle','-', 'LineWidth', 2, 'Color','Blue');
+            %rIF.scr_fig.showShape(rIF.pSdS);
+            rIF.pSdS.showShape();
         end
    
     end
