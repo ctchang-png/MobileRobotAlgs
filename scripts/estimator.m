@@ -11,5 +11,5 @@ function [X_new] = estimator(X, u, dt)
     x_new = x + V * cos(th_new) * dt;
     y_new = y + V * sin(th_new) * dt;
     th_new = th_new + (om/2) * dt;
-    X_new = [x_new, y_new, th_new];
+    X_new = [x_new, y_new, th_new]';
 end
