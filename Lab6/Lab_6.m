@@ -15,6 +15,7 @@ model = Model();
 controller = Controller(ref, traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
+executor = Executor(model);
 
 startTime = rIF.toc();
 t = 0;
@@ -30,11 +31,7 @@ while t < Tf
     t = rIF.toc() - startTime;
     est_pose = poseEstimator.getPose();
     u = controller.getControl(est_pose, t);
-    V = u(1);
-    om = u(2);
-    vl = V - om*robotModel.W2;
-    vr = V + om*robotModel.W2;
-    rIF.sendVelocity(vl, vr)
+    executor.sendControl(rIF, u);
 
     pred_pose = traj.getPoseAtTime(t);
     logger.update_logs(pred_pose, est_pose)
