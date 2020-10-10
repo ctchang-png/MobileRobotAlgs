@@ -4,16 +4,11 @@ classdef ReferenceControl < handle
     end
     
     methods
-        function obj = ReferenceControl(parameters, numSamples)
+        function obj = ReferenceControl(parameters, tPause)
             obj = obj@handle();
         end
         
-        function pose = getPoseAtTime(obj, t)
-            x = 0;
-            y = 0;
-            th = 0;
-            pose = [x;y;th];
-        end
+        function pose = getPose
         
         function V = getVAtTime(obj, t)
             V = 0;

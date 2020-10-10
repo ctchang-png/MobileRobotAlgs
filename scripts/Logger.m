@@ -39,7 +39,7 @@ classdef Logger < handle
                 obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-');
                 obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
                 hold off
-                legend({'target','pred', 'est'}, 'Location', 'northeastoutside')
+                legend({'pred', 'est'}, 'Location', 'northeastoutside')
            end
         end
         
