@@ -41,13 +41,12 @@ classdef RobotTrajectory < handle
         end
         
         function V = getVAtTime(obj, t)
-            u = obj.ref.computeControl(t);
+            u = obj.ref.computeControl(obj, timeNow);
             V = u(1);
         end
         
         function w = getwAtTime(obj, t)
-            u = obj.ref.computeControl(t);
-            w = u(2);
+            
         end
         
     end

@@ -1,5 +1,5 @@
 classdef ReferenceControl < handle
-    %Generic ref control class
+    %Generic ref control class. Update this to fit cubicSpiralTrajectory
     properties
     end
     

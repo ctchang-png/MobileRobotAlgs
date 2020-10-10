@@ -12,7 +12,7 @@ pause(1.0)
 ref = figure8ReferenceControl(3, 1, 1.0);
 traj = RobotTrajectory(ref, 1000);
 model = Model();
-controller = Controller(ref, traj, model);
+controller = Controller(traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
 executor = Executor(model);
@@ -37,7 +37,6 @@ while t < Tf
     logger.update_logs(pred_pose, est_pose)
     
     pause(0.05)
-    %do something
 end
 rIF.stop()
 term_err = traj.getPoseAtTime(Tf) - rIF.rob.sim_motion.pose;

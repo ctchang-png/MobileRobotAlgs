@@ -1,6 +1,5 @@
 classdef Controller < handle
     properties
-        ref
         traj
         model
         kx
@@ -13,9 +12,8 @@ classdef Controller < handle
     end
     
     methods
-        function obj = Controller(ref, traj, model)
+        function obj = Controller(traj, model)
             obj = obj@handle;
-            obj.ref = ref;
             obj.traj = traj;
             obj.model = model;
             lambda = obj.lambda;
@@ -25,7 +23,9 @@ classdef Controller < handle
         end
         
         function u = getControl(obj, pose, t)
-            uref = obj.ref.computeControl(t);
+            Vref = obj.traj.getVAtTime(t);
+            wref = obj.traj.getwAtTime(t);
+            uref = [Vref; wref];
             H = [cos(pose(3)), -sin(pose(3)), pose(1);...
                  sin(pose(3)), cos(pose(3)), pose(2);...
                  0, 0, 1];
