@@ -66,7 +66,7 @@ classdef cubicSpiralTrajectory < handle
             fprintf('Error predicted %f m in translation, %f rads in rotation\n',ds,dt);
 
             % Allocate tables
-            a1Tab = scalarField(qMin,qMax,numQ,tMin,tMax,numT);
+            a1Tab = scalarField(qMin,qMax,numQ,tMin,tMax,numT); 
             b1Tab = scalarField(qMin,qMax,numQ,tMin,tMax,numT);
             r1Tab = scalarField(qMin,qMax,numQ,tMin,tMax,numT); % energy integral
 
@@ -91,12 +91,18 @@ classdef cubicSpiralTrajectory < handle
             for a = -aMax:aMax/numA:aMax
                 for b = -bMax:bMax/numB:bMax
                     ds = sMax/(clothSamples-1); 
-                    x=0.0; y = 0.0; t = 0.0; r = 0.0;
+                    x=0.0; y = 0.0; t = 0.0; r = 0.0;s = 0;
                     broke = false;
                     for i=1:clothSamples
                     % Compute the curve. Break out of this loop, and then 
                     % immediately continue to next iteration of the for b loop 
                     % if tmax is exceeded in absolute value at any time.
+                    s = s + ds;
+                    k = s*(a+b*s)*(s-sf);
+                    th = k*ds;
+                    x = x + ds*cos(th);
+                    y = y + ds*sin(th);
+                    r = r + k^s*ds;
                     end
                     if(broke == true); continue; end
 
@@ -122,12 +128,12 @@ classdef cubicSpiralTrajectory < handle
                     % Store coefficients.
                     r1Now = r1Tab.get(q,t);
                     r2Now = r2Tab.get(q,t);
-                    if(abs(r1Now) > abs(r) && a >=0.0)
+                    if(abs(r1Now) > abs(r) && a >=0.0) %left solution
                         r1Tab.set(q,t,r);
                         a1Tab.set(q,t,a);
                         b1Tab.set(q,t,b);
-                    elseif(abs(r2Now) > abs(r) && a <=0.0)
-                        r2Tab.set(q,t,r);
+                    elseif(abs(r2Now) > abs(r) && a <=0.0) %right solution
+                        r2Tab.set(q,t,r); 
                         a2Tab.set(q,t,a);
                         b2Tab.set(q,t,b);
                     end

@@ -9,12 +9,14 @@ rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 pause(1.0) 
 
-ref;%Cubic spiral reference
+ref = figure8ReferenceControl(3, 1, 1.0);
 traj = RobotTrajectory(ref, 1000);
 model = Model();
-controller = Controller(ref, traj, model);
+controller = Controller(traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
+executor = Executor(model);
+cubicSpiralTraj = cubicSpiralTrajectory(
 
 startTime = rIF.toc();
 t = 0;
@@ -28,19 +30,14 @@ while t < Tf
     end
     clc
     t = rIF.toc() - startTime;
-    pose = poseEstimator.getPose();
-    u = controller.getControl(pose, t);
-    V = u(1);
-    om = u(2);
-    vl = V - om*robotModel.W2;
-    vr = V + om*robotModel.W2;
-    rIF.sendVelocity(vl, vr)
+    est_pose = poseEstimator.getPose();
+    u = controller.getControl(est_pose, t);
+    executor.sendControl(rIF, u);
 
     pred_pose = traj.getPoseAtTime(t);
-
+    logger.update_logs(pred_pose, est_pose)
     
     pause(0.05)
-    %do something
 end
 rIF.stop()
 term_err = traj.getPoseAtTime(Tf) - rIF.rob.sim_motion.pose;

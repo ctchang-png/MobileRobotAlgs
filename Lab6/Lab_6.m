@@ -16,6 +16,7 @@ controller = Controller(traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
 executor = Executor(model);
+cubicSpiralTrajectory.makeLookupTable(100);
 
 startTime = rIF.toc();
 t = 0;
