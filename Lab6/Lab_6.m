@@ -8,15 +8,12 @@ num = sum(uint8(char("Fido")));
 rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 model = Model();
-<<<<<<< HEAD
 controller = Controller(traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
 executor = Executor(model);
 cubicSpiralTrajectory.makeLookupTable(100);
-=======
 pause(1.0) 
->>>>>>> 1baec739141a43f30eb36718b13382a1c0766132
 
 %ref = figure8ReferenceControl(3, 1, 1.0);
 %traj1 = RobotTrajectory(ref, 1000); %This will be replaced with cubicSpiralTrajectory
