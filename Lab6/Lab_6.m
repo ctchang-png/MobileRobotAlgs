@@ -10,8 +10,10 @@ rIF.encoders.NewMessageFcn=@encoderEventListener;
 model = Model();
 pause(1.0) 
 
-ref = figure8ReferenceControl(3, 1, 1.0);
-traj1 = RobotTrajectory(ref, 1000); %This will be replaced with cubicSpiralTrajectory
+%ref = figure8ReferenceControl(3, 1, 1.0);
+%traj1 = RobotTrajectory(ref, 1000); %This will be replaced with cubicSpiralTrajectory
+traj1 = cubicSpiralTrajectory([3,-3,2], 1000);
+traj1.planVelocities(model.vMax);
 trajectories = [traj1];
 
 system = mrplSystem(rIF, model);

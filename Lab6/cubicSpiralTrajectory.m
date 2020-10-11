@@ -275,7 +275,8 @@ classdef cubicSpiralTrajectory < handle
             ds = sf/(obj.numSamples-1);
             %k(s) = s(a+bs)(s-sf)
             for i=1:obj.numSamples-1
-                k = obj.curvArray(i);
+                s = obj.distArray(i);
+                k = s*(a+b*s)*(s-sf);
                 dth = ds*k;
                 X = obj.poseArray(:,i);
                 x0 = X(1);
@@ -288,8 +289,7 @@ classdef cubicSpiralTrajectory < handle
                 
                 obj.poseArray(:,i+1) = [xf;yf;thf];
                 obj.distArray(i+1) = obj.distArray(i) + ds;
-                s = obj.distArray(i+1);
-                obj.curvArray(i+1) = s*(a+b*s)*(s-sf);
+                obj.curvArray(i) = k;
                 
             end
             i = obj.numSamples;

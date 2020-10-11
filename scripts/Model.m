@@ -3,7 +3,7 @@ classdef Model < handle
         W = 0.090;
         W2 = 0.045;
         t_delay = 0.1632;
-        vMax = 0.50;
+        vMax = 0.490;
     end
    
     methods
