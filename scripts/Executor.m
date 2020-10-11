@@ -18,8 +18,9 @@ classdef Executor < handle
             Vr = V + om*W;
             Vl = V - om*W;
             if (abs(Vr) > vMax || abs(Vl) > vMax)
-                Vr = Vr * vMax/max(abs(Vr), abs(Vl));
-                Vl = Vl * vMax/max(abs(Vr), abs(Vl));
+                scale = vMax / max(abs(Vr), abs(Vl));
+                Vr = Vr * scale;
+                Vl = Vl * scale;
             end
             rIF.sendVelocity(Vl, Vr)
         end

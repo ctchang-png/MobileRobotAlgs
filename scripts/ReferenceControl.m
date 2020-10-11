@@ -4,14 +4,27 @@ classdef ReferenceControl < handle
     end
     
     methods
-        function obj = ReferenceControl(parameters, tPause)
+        function obj = ReferenceControl(parameters, numSamples)
             obj = obj@handle();
         end
         
-        function u = computeControl(obj, timeNow)
+        function pose = getPoseAtTime(obj, t)
+            x = 0;
+            y = 0;
+            th = 0;
+            pose = [x;y;th];
+        end
+        
+        function V = getVAtTime(obj, t)
             V = 0;
-            om = 0;
-            u = [V; om];
+        end
+        
+        function w = getwAtTime(obj, t)
+            w = 0;
+        end
+        
+        function t = getTrajectoryDuration(obj)
+            t = 0;
         end
     end
    

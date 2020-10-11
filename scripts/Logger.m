@@ -31,15 +31,15 @@ classdef Logger < handle
                 title('Pred and Est path')
                 xlabel('robotX (m)')
                 ylabel('robotY (m)')
-                xlim([-0.6 0.6]);
-                ylim([-0.6 0.6]);
+                xlim([-1.6 2.6]);
+                ylim([-1.6 2.6]);
                 hold on
                 %Implement if we want to see the target trajectory
                 %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
                 obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-');
                 obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
                 hold off
-                legend({'target','pred', 'est'}, 'Location', 'northeastoutside')
+                legend({'pred', 'est'}, 'Location', 'northeastoutside')
            end
         end
         

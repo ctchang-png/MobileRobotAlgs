@@ -13,7 +13,7 @@ classdef RobotTrajectory < handle
         function obj = RobotTrajectory(refControl, numSamples)
             obj = obj@handle;
             obj.numSamples = numSamples;
-            obj.ref = refControl
+            obj.ref = refControl;
             vel = zeros(1, numSamples);
             pose = zeros(3, numSamples);
             dist = zeros(1, numSamples);
@@ -38,15 +38,17 @@ classdef RobotTrajectory < handle
         function pose = getPoseAtTime(obj, t)
             T = linspace(0, obj.duration, obj.numSamples);
             pose = (interp1(T, (obj.pose)', t))';
-        end
-        
-        function V = getVAtTime(obj, t)
-            u = obj.ref.computeControl(obj, timeNow);
+            u = obj.ref.computeControl(t);
             V = u(1);
         end
         
         function w = getwAtTime(obj, t)
-            
+            u = obj.ref.computeControl(t);
+            w = u(2);
+        end
+        
+        function t = getTrajectoryDuration(obj)
+            t = obj.ref.getTrajectoryDuration();
         end
         
     end
