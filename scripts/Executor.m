@@ -22,9 +22,6 @@ classdef Executor < handle
                 Vr = Vr * scale;
                 Vl = Vl * scale;
             end
-            if Vr > 0.500 || Vl > 0.500
-                disp('youre fuckin bad at coding')
-            end
             rIF.sendVelocity(Vl, Vr)
         end
     end
