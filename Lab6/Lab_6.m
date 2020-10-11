@@ -8,11 +8,10 @@ num = sum(uint8(char("Fido")));
 rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 model = Model();
-controller = Controller(traj, model);
 poseEstimator = PoseEstimator(model);
 logger = Logger(true);
 executor = Executor(model);
-cubicSpiralTrajectory.makeLookupTable(100);
+%cubicSpiralTrajectory.makeLookupTable(100);
 pause(1.0) 
 
 %ref = figure8ReferenceControl(3, 1, 1.0);
