@@ -38,6 +38,9 @@ classdef RobotTrajectory < handle
         function pose = getPoseAtTime(obj, t)
             T = linspace(0, obj.duration, obj.numSamples);
             pose = (interp1(T, (obj.pose)', t))';
+        end
+        
+        function V = getVAtTime(obj, t)
             u = obj.ref.computeControl(t);
             V = u(1);
         end
