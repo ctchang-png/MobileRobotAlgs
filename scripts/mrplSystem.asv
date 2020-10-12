@@ -3,12 +3,9 @@ classdef mrplSystem < handle
     properties
         rIF
         model
-        poseEstimatorAbs
-        poseEstimatorTraj
+        poseEstimator
         logger
         executor
-        abs_pose
-        traj_pose
     end
     
     methods
@@ -28,7 +25,7 @@ classdef mrplSystem < handle
             Tf = traj.getTrajectoryDuration();
             controller = Controller(traj, obj.model);
             initialized = false;
-            obj.poseEstimatorTraj.setOrigin() %doesn't zero theta atm
+            obj.poseEstimatorTraj.setOrigin()
             start_pose = obj.poseEstimatorAbs.getPose();
             while t < (Tf + 0.5) %0.5s for end corrections
                 if ~initialized
@@ -39,10 +36,10 @@ classdef mrplSystem < handle
                 t = obj.rIF.toc() - startTime;
                 est_pose_abs = obj.poseEstimatorAbs.getPose();
                 est_pose_traj = obj.poseEstimatorTraj.getPose();
-                u = controller.getControl(est_pose_traj, t);
+                u = controller.getControl(est_pose_traj, min(t,Tf));
                 obj.executor.sendControl(obj.rIF, u);
 
-                pred_pose = traj.getPoseAtTime(t) + start_pose;
+                pred_pose = traj.getPoseAtTime(min(t,Tf)) + start_pose;
                 obj.logger.update_logs(pred_pose, est_pose_abs)
 
                 pause(0.05)

@@ -3,8 +3,7 @@ classdef mrplSystem < handle
     properties
         rIF
         model
-        poseEstimatorAbs
-        poseEstimatorTraj
+        poseEstimator
         logger
         executor
     end
@@ -14,8 +13,7 @@ classdef mrplSystem < handle
             obj = obj@handle;
             obj.rIF = rIF;
             obj.model = model;
-            obj.poseEstimatorAbs = PoseEstimator(obj.model);
-            obj.poseEstimatorTraj = PoseEstimator(obj.model);
+            obj.poseEstimator = PoseEstimator(obj.model);
             obj.logger = Logger(true);
             obj.executor = Executor(obj.model);
         end
@@ -24,24 +22,27 @@ classdef mrplSystem < handle
             startTime = obj.rIF.toc();
             t = 0;
             Tf = traj.getTrajectoryDuration();
-            controller = Controller(traj, obj.model);
+            obj.poseEstimator.setOrigin()
+            trajOrigin = obj.poseEstimator.trajOrigin;
+            H_w_t = obj.poseEstimator.H_w_t;
+            controller = Controller(traj, trajOrigin, obj.model);
             initialized = false;
-            obj.poseEstimatorTraj.setOrigin()
-            start_pose = obj.poseEstimatorAbs.getPose();
-            while t < (Tf + 0.5) %0.5s for end corrections
+
+            while t < (Tf + 0.50) %0.5s for end corrections
                 if ~initialized
                     %init
                     initialized = true;
                 end
                 %clc
                 t = obj.rIF.toc() - startTime;
-                est_pose_abs = obj.poseEstimatorAbs.getPose();
-                est_pose_traj = obj.poseEstimatorTraj.getPose();
-                u = controller.getControl(est_pose_traj, min(t,Tf));
+                est_pose = obj.poseEstimator.getPose();
+                u = controller.getControl(est_pose, min(t,Tf));
                 obj.executor.sendControl(obj.rIF, u);
 
-                pred_pose = traj.getPoseAtTime(min(t,Tf)) + start_pose;
-                obj.logger.update_logs(pred_pose, est_pose_abs)
+                p_t = traj.getPoseAtTime(min(t,Tf));
+                pred_pose = H_w_t * [p_t(1:2) ; 1];
+                pred_pose(3) = p_t(3) + trajOrigin(3);
+                obj.logger.update_logs(pred_pose, est_pose)
 
                 pause(0.05)
             end

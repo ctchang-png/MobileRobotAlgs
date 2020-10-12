@@ -14,6 +14,7 @@ classdef Controller < handle
     
     methods
         function obj = Controller(traj, trajOrigin,  model)
+            disp(trajOrigin)
             obj = obj@handle;
             obj.traj = traj;
             obj.model = model;
@@ -35,11 +36,11 @@ classdef Controller < handle
                      sin(obj.trajOrigin(3)), cos(obj.trajOrigin(3)), obj.trajOrigin(2);...
                      0, 0, 1];
             p_ref = obj.traj.getPoseAtTime(t); %in T frame
-            e_w = H_w_t * [p_ref(1:2) ; 1] - [pose(1:2) ; 1];
-            e_r = H_w_r \ e_w;
-            ex = e_r(1);
-            ey = e_r(2);
-            eth = p_ref(3) + obj.trajOrigin(3) - pose(3);
+            p_ref = [p_ref(1:2) ; 1
+            err = H_w_r \ (H_w_t * p_ref);
+            ex = err(1);
+            ey = err(2);
+            eth = p_ref(3) - pose(3);
             up = [obj.kx*ex ; obj.ky*ey + obj.kth*eth];
             if sum(isnan(up)) ~= 0
                 up = [0;0];
