@@ -1,5 +1,5 @@
 classdef Model < handle
-    properties (Constant)
+    properties
         W = 0.090;
         W2 = 0.045;
         t_delay = 0.1632;

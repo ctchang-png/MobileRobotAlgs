@@ -27,7 +27,7 @@ for ii = 1:length(pose_targets)
     rIF.stop()
     %error stuff is incorrect for now (should find pose relative to start
     %pose)
-    term_err = sum(pose_targets(:,1:ii), 2) - rIF.rob.sim_motion.pose;
-    e = norm(term_err(1:2) * 1000);
-    fprintf("Terminal error for trajectory %1.0f: %2.2fmm \n", ii, e)
 end
+err = 1000 * (rIF.rob.sim_motion.pose - [0,0,0]);
+e = norm(err(1:2));
+fprintf("Terminal error for trajectory %1.0f: %2.2fmm \n", ii, e)

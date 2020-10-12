@@ -63,6 +63,12 @@ classdef Logger < handle
            end
         end
         
+        function e = getError(obj)
+            ex = obj.est_logs_X(end) - obj.pred_logs_X(end);
+            ey = obj.est_logs_Y(end) - obj.pred_logs_Y(end);
+            e = norm([ex, ey]);
+        end
+        
     end
     
 end
