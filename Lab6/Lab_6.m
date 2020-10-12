@@ -16,7 +16,9 @@ pause(1.0)
 
 %ref = figure8ReferenceControl(3, 1, 1.0);
 %traj1 = RobotTrajectory(ref, 1000); %This will be replaced with cubicSpiralTrajectory
-pose_targets = [[1;1;pi/2], [-1;1;pi],[0;-2;0]];
+pose_targets = [0.3048,0.3048,0.0;...
+                -0.6096,-0.696,-pi/2.0;...
+                0.3058, 0.3048, pi/2.0].';
 %traj1 = cubicSpiralTrajectory.planTrajectory
 %traj1.planVelocities(model.vMax);
 %trajectories = [];

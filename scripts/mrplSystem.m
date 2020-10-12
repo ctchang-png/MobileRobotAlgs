@@ -28,7 +28,7 @@ classdef mrplSystem < handle
             Tf = traj.getTrajectoryDuration();
             controller = Controller(traj, obj.model);
             initialized = false;
-            obj.poseEstimatorTraj.setOrigin() %doesn't zero theta atm
+            obj.poseEstimatorTraj.setOrigin()
             start_pose = obj.poseEstimatorAbs.getPose();
             while t < (Tf + 0.5) %0.5s for end corrections
                 if ~initialized
