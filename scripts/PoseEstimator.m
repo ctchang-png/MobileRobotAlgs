@@ -45,6 +45,12 @@ classdef PoseEstimator < handle
             obj.prevPose = pose;
             obj.prevEncoderData = encoderData;
         end
+        
+        function setOrigin(obj)
+           obj.prevPose(1) = 0; %x
+           obj.prevPose(2) = 0; %y
+           obj.prevEncoderData = encoderDataGetter();
+        end
     end
     
 end

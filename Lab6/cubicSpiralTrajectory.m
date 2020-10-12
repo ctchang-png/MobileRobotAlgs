@@ -91,18 +91,21 @@ classdef cubicSpiralTrajectory < handle
             for a = -aMax:aMax/numA:aMax
                 for b = -bMax:bMax/numB:bMax
                     ds = sMax/(clothSamples-1); 
-                    x=0.0; y = 0.0; t = 0.0; r = 0.0;s = 0;
+                    x=0.0; y = 0.0; t = 0.0; r = 0.0;
+                    s = 0; sf = 1;
                     broke = false;
                     for i=1:clothSamples
-                    % Compute the curve. Break out of this loop, and then 
-                    % immediately continue to next iteration of the for b loop 
-                    % if tmax is exceeded in absolute value at any time.
-                    s = s + ds;
-                    k = s*(a+b*s)*(s-sf);
-                    th = k*ds;
-                    x = x + ds*cos(th);
-                    y = y + ds*sin(th);
-                    r = r + k^s*ds;
+                        % Compute the curve. Break out of this loop, and then 
+                        % immediately continue to next iteration of the for b loop 
+                        % if tmax is exceeded in absolute value at any time.
+                        k = s*(a+b*s)*(s-sf);
+                        dth = k*ds;
+                        t = t + dth/2;
+                        x = x + ds*cos(t);
+                        y = y + ds*sin(t);
+                        t = t + dth/2;
+                        r = r + (k^2)*ds;
+                        s = s + ds;
                     end
                     if(broke == true); continue; end
 
@@ -180,7 +183,7 @@ classdef cubicSpiralTrajectory < handle
             persistent a1T a2T b1T b2T r1T r2T;
                     
             if(isempty(inited))
-                load('cubicSpirals2mm_015rads','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
+                load('cubicSpirals','a1Tab','a2Tab','b1Tab','b2Tab','r1Tab','r2Tab');
                 inited = true;
                 a1T = a1Tab;a2T = a2Tab;b1T = b1Tab;b2T = b2Tab;r1T = r1Tab;r2T = r2Tab;
             end
@@ -226,7 +229,7 @@ classdef cubicSpiralTrajectory < handle
 
             % Plot the corresponding unit
             su = 1.0;
-            clothu = cubicSpiral([au bu su],201);
+            clothu = cubicSpiralTrajectory([au bu su],201);
 
             %hold on;
 
@@ -245,7 +248,7 @@ classdef cubicSpiralTrajectory < handle
                 as = -as;  
                 ss = -ss;
             end
-            curve = cubicSpiral([as bs ss],201);
+            curve = cubicSpiralTrajectory([as bs ss],201);
         end
             
     end

@@ -92,17 +92,20 @@ classdef cubicSpiralTrajectory < handle
                 for b = -bMax:bMax/numB:bMax
                     ds = sMax/(clothSamples-1); 
                     x=0.0; y = 0.0; t = 0.0; r = 0.0;
+                    s = 0; th = 0; sf = 1;
                     broke = false;
                     for i=1:clothSamples
-                    % Compute the curve. Break out of this loop, and then 
-                    % immediately continue to next iteration of the for b loop 
-                    % if tmax is exceeded in absolute value at any time.
-                    s = s + ds*(i-previ);
-                    k = s(a+b*s)*(s-sf);
-                    th = k*ds;
-                    x = x + 
-                    r = r + k^s*ds;
-                    previ = i;
+                        % Compute the curve. Break out of this loop, and then 
+                        % immediately continue to next iteration of the for b loop 
+                        % if tmax is exceeded in absolute value at any time.
+                        k = s*(a+b*s)*(s-sf);
+                        dth = k*ds;
+                        th = th + dth/2;
+                        x = x + ds*cos(th);
+                        y = y + ds*sin(th);
+                        th = th + dth/2;
+                        r = r + (k^2)*ds;
+                        s = s + ds;
                     end
                     if(broke == true); continue; end
 
@@ -294,7 +297,8 @@ classdef cubicSpiralTrajectory < handle
                 thf = th0 + dth;
                 
                 obj.poseArray(:,i+1) = [xf;yf;thf];
-                obj.distArray(i+1) = 
+                obj.distArray(i+1) = obj.distArray(i) + ds;
+                obj.curvArray(i) = k;
                 
             end
             i = obj.numSamples;
