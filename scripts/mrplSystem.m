@@ -7,8 +7,6 @@ classdef mrplSystem < handle
         poseEstimatorTraj
         logger
         executor
-        abs_pose
-        traj_pose
     end
     
     methods

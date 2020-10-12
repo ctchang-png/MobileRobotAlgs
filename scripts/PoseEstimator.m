@@ -24,6 +24,7 @@ classdef PoseEstimator < handle
             obj = obj@handle;
             obj.model = model;
             obj.W2 = model.W2;
+            obj.setOrigin()
             
         end
  
