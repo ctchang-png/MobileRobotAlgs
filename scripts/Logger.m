@@ -1,6 +1,6 @@
 classdef Logger < handle
    
-    properties
+    properties(Access = public)
         %Later: expand to log posture, not just pose(x,y)
         %       expand to log real posture in addition to est
         do_live_plotting;
@@ -11,6 +11,7 @@ classdef Logger < handle
         pred_plt;
         est_plt;
         plot_idx = 0;
+        posenum;
     end
     
     properties (Constant)
@@ -21,14 +22,45 @@ classdef Logger < handle
         function obj = Logger(do_live_plotting)
            obj = obj@handle;
            obj.do_live_plotting = do_live_plotting;
-           obj.pred_logs_X = zeros(Logger.plot_n, 1);
-           obj.pred_logs_Y = zeros(Logger.plot_n, 1);
-           obj.est_logs_X = zeros(Logger.plot_n, 1);
-           obj.est_logs_Y = zeros(Logger.plot_n, 1);
+           obj.pred_logs_X = zeros(1, 1); % Matlab is weird you don't need to instantiate the indices - RJ
+           obj.pred_logs_Y = zeros(1, 1);
+           obj.est_logs_X = zeros(1, 1);
+           obj.est_logs_Y = zeros(1, 1);
            if do_live_plotting
-               	figure(1)
+               	figure
                 clf
-                title('Pred and Est path')
+                title('Pred vs. Est path - Pose')
+                xlabel('robotX (m)')
+                ylabel('robotY (m)')
+                xlim([-1.6 2.6]);
+                ylim([-1.6 2.6]);
+                hold on
+                %Implement if we want to see the target trajectory
+                %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
+                obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-');
+                %obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
+                hold off
+                legend({'pred','est'}, 'Location', 'northeastoutside')
+              
+               %{
+              if posenum ==2
+                figure(2)
+                clf
+                title('Pred vs. Est path - Pose 2')
+                xlabel('robotX (m)')
+                ylabel('robotY (m)')
+                xlim([-1.6 2.6]);
+                ylim([-1.6 2.6]);
+                hold on
+                obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
+                hold off
+                legend({'pred','est'}, 'Location', 'northeastoutside')
+              end
+              
+              if posenum ==3
+                figure(3)
+                clf
+                title('Pred vs. Est path - Pose 3')
                 xlabel('robotX (m)')
                 ylabel('robotY (m)')
                 xlim([-1.6 2.6]);
@@ -40,16 +72,19 @@ classdef Logger < handle
                 obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
                 hold off
                 legend({'pred', 'est'}, 'Location', 'northeastoutside')
+              end
+               %}
+              
            end
         end
         
         function update_logs(obj, pred_pose, est_pose)
            obj.plot_idx = obj.plot_idx + 1;
            if obj.plot_idx > length(obj.pred_logs_X)
-               obj.pred_logs_X = [obj.pred_logs_X ; zeros(Logger.plot_n, 1)];
-               obj.pred_logs_Y = [obj.pred_logs_Y ; zeros(Logger.plot_n, 1)];
-               obj.est_logs_X = [obj.est_logs_X ; zeros(Logger.plot_n, 1)];
-               obj.est_logs_Y = [obj.est_logs_Y ; zeros(Logger.plot_n, 1)];
+               obj.pred_logs_X = [obj.pred_logs_X ; zeros(1, 1)];
+               obj.pred_logs_Y = [obj.pred_logs_Y ; zeros(1, 1)];
+               obj.est_logs_X = [obj.est_logs_X ; zeros(1, 1)];
+               obj.est_logs_Y = [obj.est_logs_Y ; zeros(1, 1)];
            end
            obj.pred_logs_X(obj.plot_idx) = pred_pose(1);
            obj.pred_logs_Y(obj.plot_idx) = pred_pose(2);
@@ -62,7 +97,6 @@ classdef Logger < handle
                    'ydata', obj.est_logs_Y(1:obj.plot_idx))
            end
         end
-        
     end
     
 end
