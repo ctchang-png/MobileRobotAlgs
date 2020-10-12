@@ -31,11 +31,18 @@ for ii = 1:length(pose_targets)
     %pose)
     term_err = sum(pose_targets(:,1:ii), 2) - rIF.rob.sim_motion.pose;
     e = norm(term_err(1:2) * 1000);
-    
     figure
-    logger.pred_logs_X
+    titlenum = num2str(ii);
+    title(['Reference Trajectory vs. Sensed Trajectory - Pose ' , titlenum]);
+    xlabel('robotX (m)');
+    ylabel('robotY (m)');
+    %xlim([-1.6 2.6]);
+    %ylim([-1.6 2.6]);
+    logger.pred_logs_X;
+    hold on;
     plot(logger.pred_logs_X, logger.pred_logs_Y, ...
          logger.est_logs_X, logger.est_logs_Y);
-    
+    hold off;
+    legend({'ref','sensed'}, 'Location', 'northeastoutside'); %ref = predicted; sensed = estimated
     fprintf("Terminal error for trajectory %1.0f: %2.2fmm \n", ii, e)
 end
