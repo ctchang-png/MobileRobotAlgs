@@ -27,8 +27,7 @@ for ii = 1:length(pose_targets)
     pose_target = pose_targets(:, ii);
     system.executeTrajectoryToRelativePose(pose_target, 1);
     rIF.stop()
-    %error stuff is incorrect for now (should find pose relative to start
-    %pose)
+    %error stuff is incorrect for now
     term_err = sum(pose_targets(:,1:ii), 2) - rIF.rob.sim_motion.pose;
     e = norm(term_err(1:2) * 1000);
     figure
