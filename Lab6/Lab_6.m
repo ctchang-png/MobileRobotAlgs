@@ -27,9 +27,8 @@ for ii = 1:length(pose_targets)
     pose_target = pose_targets(:, ii);
     system.executeTrajectoryToRelativePose(pose_target, 1);
     rIF.stop()
-    %error stuff is incorrect for now
-    term_err = sum(pose_targets(:,1:ii), 2) - rIF.rob.sim_motion.pose;
-    e = norm(term_err(1:2) * 1000);
+    
+    
     figure
     titlenum = num2str(ii);
     title(['Reference Trajectory vs. Sensed Trajectory - Pose ' , titlenum]);
@@ -43,5 +42,4 @@ for ii = 1:length(pose_targets)
          logger.est_logs_X, logger.est_logs_Y);
     hold off;
     legend({'ref','sensed'}, 'Location', 'northeastoutside'); %ref = predicted; sensed = estimated
-    fprintf("Terminal error for trajectory %1.0f: %2.2fmm \n", ii, e)
 end
