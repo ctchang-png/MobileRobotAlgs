@@ -1,11 +1,17 @@
 classdef mrplSystem < handle
-    
+    %TODO:
+    %Add pred and est pose relative to traj origin to logger
+    %Add getTerminalError to logger (traj specific)
     properties
         rIF
         model
         poseEstimator
         logger
         executor
+        %traj stuff will eventually migrate to a planner class
+        trajOrigin
+        trajectory
+        H_w_t
     end
     
     methods
@@ -26,10 +32,9 @@ classdef mrplSystem < handle
             startTime = obj.rIF.toc();
             t = 0;
             Tf = traj.getTrajectoryDuration();
-            obj.poseEstimator.setOrigin()
-            trajOrigin = obj.poseEstimator.trajOrigin;
-            H_w_t = obj.poseEstimator.H_w_t;
-            controller = Controller(traj, trajOrigin, obj.model);
+            obj.setTrajOrigin();
+            obj.trajectory = traj;
+            controller = Controller(traj, obj.trajOrigin, obj.model);
             initialized = false;
 
             while t < (Tf + 0.50) %0.5s for end corrections
@@ -43,20 +48,31 @@ classdef mrplSystem < handle
                 u = controller.getControl(est_pose, min(t,Tf));
                 obj.executor.sendControl(obj.rIF, u);
 
-                p_t = traj.getPoseAtTime(min(t,Tf));
-                pred_pose = H_w_t * [p_t(1:2) ; 1];
-                pred_pose(3) = p_t(3) + trajOrigin(3);
+                p_t = traj.getPoseAtTime(min(t,Tf)); %traj frame
+                pred_pose = obj.H_w_t * [p_t(1:2) ; 1]; %world frame
+                pred_pose(3) = p_t(3) + obj.trajOrigin(3); %world frame
                 obj.logger.update_logs(pred_pose, est_pose)
 
                 pause(0.05)
             end
+            
         end
         
         function executeTrajectoryToRelativePose(obj, pose, sign)
             x = pose(1); y = pose(2); th = pose(3);
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
-            traj.planVelocities(obj.model.vMax) 
+            traj.planVelocities(obj.model.vMax)
+            obj.trajectory = traj;
             obj.executeTrajectory(traj);
+        end
+        
+        function setTrajOrigin(obj)
+           pose = obj.poseEstimator.getPose();
+           obj.trajOrigin = pose;
+           H = [cos(pose(3)), -sin(pose(3)), pose(1);...
+                sin(pose(3)),  cos(pose(3)), pose(2);...
+                0, 0, 1];
+           obj.H_w_t = H;
         end
     end
     

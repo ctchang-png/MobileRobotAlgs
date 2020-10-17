@@ -1,8 +1,6 @@
 classdef Logger < handle
    
     properties(Access = public)
-        %Later: expand to log posture, not just pose(x,y)
-        %       expand to log real posture in addition to est
         do_live_plotting;
         pred_logs_X;
         pred_logs_Y;
@@ -11,7 +9,6 @@ classdef Logger < handle
         pred_plt;
         est_plt;
         plot_idx = 0;
-        posenum;
     end
     
     properties (Constant)
@@ -38,10 +35,9 @@ classdef Logger < handle
                 %Implement if we want to see the target trajectory
                 %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
                 obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-');
-                %obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
+                obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
                 hold off
                 legend({'pred','est'}, 'Location', 'northeastoutside')
-              
            end
         end
         
