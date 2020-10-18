@@ -31,7 +31,7 @@ classdef PoseEstimator < handle
         function pose = getPose(obj)
             %Update pose on call. Probably better for encoderEventListener
             %to update pose
-            newEncoderData = encoderDataGetter();
+            newEncoderData = obj.encoderDataGetter();
             d_encoder = newEncoderData - obj.encoderData;
             dl = d_encoder(1);
             dr = d_encoder(2);

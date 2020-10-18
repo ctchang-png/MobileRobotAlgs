@@ -50,7 +50,8 @@ classdef mrplSystem < handle
                 p_t = traj.getPoseAtTime(min(t,Tf)); %traj frame
                 pred_pose = obj.H_w_t * [p_t(1:2) ; 1]; %world frame
                 pred_pose(3) = p_t(3) + obj.trajOrigin(3); %world frame
-                obj.logger.update_logs(pred_pose, est_pose)
+                real_pose = obj.rIF.rob.sim_motion.pose;
+                obj.logger.update_logs(pred_pose, est_pose, real_pose)
 
                 pause(0.05)
             end
