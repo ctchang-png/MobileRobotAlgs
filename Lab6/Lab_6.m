@@ -26,7 +26,7 @@ for ii = 1:length(pose_targets)
     system.update_logger(logger);
     pose_target = pose_targets(:, ii);
     system.executeTrajectoryToRelativePose(pose_target, 1);
-    rIF.stop()
+    rIF.stop();
     
     
     figure

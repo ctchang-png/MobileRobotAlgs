@@ -11,7 +11,6 @@ classdef simRobot
         function obj = simRobot(inputArg1,inputArg2)
             %SIMROBOT takes encoders and time tags
            
-            
         end
         
         function outputArg = method1(obj,inputArg)

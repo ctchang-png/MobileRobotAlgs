@@ -28,11 +28,11 @@ classdef mrplSystem < handle
             obj.logger = logger;
         end
         
-        function executeTrajectory(obj, traj)
+        function executeTrajectory(obj, traj, newOrigin)
             startTime = obj.rIF.toc();
             t = 0;
             Tf = traj.getTrajectoryDuration();
-            obj.setTrajOrigin();
+            obj.setTrajOrigin(newOrigin);
             obj.trajectory = traj;
             controller = Controller(traj, obj.trajOrigin, obj.model);
             initialized = false;
@@ -58,16 +58,17 @@ classdef mrplSystem < handle
             
         end
         
-        function executeTrajectoryToRelativePose(obj, pose, sign)
+        function executeTrajectoryToRelativePose(obj, pose, newOrigin, sign)
             x = pose(1); y = pose(2); th = pose(3);
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
             traj.planVelocities(obj.model.vMax)
             obj.trajectory = traj;
-            obj.executeTrajectory(traj);
+            obj.executeTrajectory(traj,newOrigin);
         end
         
-        function setTrajOrigin(obj)
-           pose = obj.poseEstimator.getPose();
+        function setTrajOrigin(obj,newOrigin)
+           %pose = obj.poseEstimator.getPose(); where the robot is actually 
+           pose = newOrigin; %newOrigin is the previous pose target
            obj.trajOrigin = pose;
            H = [cos(pose(3)), -sin(pose(3)), pose(1);...
                 sin(pose(3)),  cos(pose(3)), pose(2);...
