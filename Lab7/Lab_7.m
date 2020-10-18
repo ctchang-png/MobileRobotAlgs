@@ -19,21 +19,16 @@ pose_targets = [0.3048,0.3048,0.0;...
                 -0.6096,-0.6096,-pi/2.0;...
                 -0.3048, 0.3048, pi/2.0].';
 
-system = mrplSystem(rIF, model, Logger(false));
+system = mrplSystem(rIF, model);
 
 for ii = 1:length(pose_targets)
-    logger = Logger(false);
-    system.update_logger(logger);
+    %logger = Logger(false);
+    %system.update_logger(logger);
     pose_target = pose_targets(:, ii);
-    if ii ==1
-        newOrigin = [0,0,0];
-    else
-        newOrigin = pose_targets(:,ii-1);
-    end
-    system.executeTrajectoryToRelativePose(pose_target, newOrigin, 1);
+    system.executeTrajectoryToRelativePose(pose_target, 1);
     rIF.stop()
     
-    
+    %{
     figure
     titlenum = num2str(ii);
     title(['Reference Trajectory vs. Sensed Trajectory - Pose ' , titlenum]);
@@ -47,4 +42,5 @@ for ii = 1:length(pose_targets)
          logger.est_logs_X, logger.est_logs_Y);
     hold off;
     legend({'ref','sensed'}, 'Location', 'northeastoutside'); %ref = predicted; sensed = estimated
+    %}
 end

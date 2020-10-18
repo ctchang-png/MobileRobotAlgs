@@ -9,18 +9,18 @@ classdef mrplSystem < handle
         logger
         executor
         %traj stuff will eventually migrate to a planner class
-        trajOrigin
+        trajOrigin = [0;0;0];
         trajectory
-        H_w_t
+        H_w_t = [1,0,0;0,1,0;0,0,1];
     end
     
     methods
-        function obj = mrplSystem(rIF, model, logger)
+        function obj = mrplSystem(rIF, model)
             obj = obj@handle;
             obj.rIF = rIF;
             obj.model = model;
             obj.poseEstimator = PoseEstimator(obj.model);
-            obj.logger = logger;
+            obj.logger = Logger(true);
             obj.executor = Executor(obj.model);
         end
         
@@ -28,11 +28,10 @@ classdef mrplSystem < handle
             obj.logger = logger;
         end
         
-        function executeTrajectory(obj, traj, newOrigin)
+        function executeTrajectory(obj, traj)
             startTime = obj.rIF.toc();
             t = 0;
             Tf = traj.getTrajectoryDuration();
-            obj.setTrajOrigin(newOrigin);
             obj.trajectory = traj;
             controller = Controller(traj, obj.trajOrigin, obj.model);
             initialized = false;
@@ -55,23 +54,26 @@ classdef mrplSystem < handle
 
                 pause(0.05)
             end
+            termRefPose = traj.getPoseAtTime(Tf);
+            Origin = obj.H_w_t * [termRefPose(1:2) ; 1];
+            Origin(3) = termRefPose(3) + obj.trajOrigin(3);
+            obj.setTrajOrigin(Origin)
             
         end
         
-        function executeTrajectoryToRelativePose(obj, pose, newOrigin, sign)
+        function executeTrajectoryToRelativePose(obj, pose, sign)
             x = pose(1); y = pose(2); th = pose(3);
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
             traj.planVelocities(obj.model.vMax)
             obj.trajectory = traj;
-            obj.executeTrajectory(traj,newOrigin);
+            obj.executeTrajectory(traj);
         end
         
         function setTrajOrigin(obj,newOrigin)
            %pose = obj.poseEstimator.getPose(); where the robot is actually 
-           pose = newOrigin; %newOrigin is the previous pose target
-           obj.trajOrigin = pose;
-           H = [cos(pose(3)), -sin(pose(3)), pose(1);...
-                sin(pose(3)),  cos(pose(3)), pose(2);...
+           obj.trajOrigin = newOrigin;
+           H = [cos(newOrigin(3)), -sin(newOrigin(3)), newOrigin(1);...
+                sin(newOrigin(3)),  cos(newOrigin(3)), newOrigin(2);...
                 0, 0, 1];
            obj.H_w_t = H;
         end

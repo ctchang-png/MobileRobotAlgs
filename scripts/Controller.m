@@ -34,12 +34,13 @@ classdef Controller < handle
             H_w_t = [cos(obj.trajOrigin(3)), -sin(obj.trajOrigin(3)), obj.trajOrigin(1);...
                      sin(obj.trajOrigin(3)), cos(obj.trajOrigin(3)), obj.trajOrigin(2);...
                      0, 0, 1];
-            p_ref = obj.traj.getPoseAtTime(t); %in T frame
-            e_w = H_w_t * [p_ref(1:2) ; 1] - [pose(1:2) ; 1];
+            p_ref_t = obj.traj.getPoseAtTime(t); %in T frame
+            p_ref_w = H_w_t * [p_ref_t(1:2) ; 1]; %in world frame
+            e_w = p_ref_w - [pose(1:2) ; 1];
             e_r = H_w_r \ e_w;
             ex = e_r(1);
             ey = e_r(2);
-            eth = p_ref(3) + obj.trajOrigin(3) - pose(3);
+            eth = p_ref_t(3) + obj.trajOrigin(3) - pose(3);
             up = [obj.kx*ex ; obj.ky*ey + obj.kth*eth];
             if sum(isnan(up)) ~= 0
                 up = [0;0];
