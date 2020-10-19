@@ -4,7 +4,7 @@ clear encoderEventListener
 clear PID_control
 clc
 clf
-num = sum(uint8(char("Fido")));
+num = sum(uint8(char("My pet Brandon Rishi")));
 rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 model = Model();
