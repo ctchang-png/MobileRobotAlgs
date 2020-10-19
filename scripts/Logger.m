@@ -28,7 +28,7 @@ classdef Logger < handle
            obj.real_logs_X = zeros(1, obj.plot_n);
            obj.real_logs_Y = zeros(1, obj.plot_n);
            if do_live_plotting
-               	figure
+               	figure(1)
                 clf
                 title('Pred vs. Est path - Pose')
                 xlabel('robotX (m)')
