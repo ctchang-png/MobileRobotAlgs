@@ -30,7 +30,7 @@ classdef Logger < handle
            if do_live_plotting
                	figure
                 clf
-                title('Pred vs. Est path - Pose')
+                title('Reference Trajectory vs. Sensed Trajectory - Pose')
                 xlabel('robotX (m)')
                 ylabel('robotY (m)')
                 xlim([-1.0 1.0]);
@@ -38,10 +38,10 @@ classdef Logger < handle
                 hold on
                 %Implement if we want to see the target trajectory
                 %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
-                obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-');
-                obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-');
+                obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-'); %pred = reference
+                obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-'); %est = sensed
                 hold off
-                legend({'pred','est'}, 'Location', 'northeastoutside')
+                legend({'ref','sensed'}, 'Location', 'northeastoutside')
            end
         end
         
