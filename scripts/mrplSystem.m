@@ -1,13 +1,11 @@
 classdef mrplSystem < handle
-    %TODO:
-    %Add pred and est pose relative to traj origin to logger
-    %Add getTerminalError to logger (traj specific)
     properties
         rIF
         model
         poseEstimator
         logger
         executor
+        perceptor
         %traj stuff will eventually migrate to a planner class
         trajOrigin = [0;0;0];
         trajectory
@@ -22,10 +20,7 @@ classdef mrplSystem < handle
             obj.poseEstimator = PoseEstimator(obj.model);
             obj.logger = Logger(true);
             obj.executor = Executor(obj.model);
-        end
-        
-        function update_logger(obj, logger)
-            obj.logger = logger;
+            obj.perceptor = Perceptor();
         end
         
         function executeTrajectory(obj, traj)
@@ -71,13 +66,45 @@ classdef mrplSystem < handle
         end
         
         function setTrajOrigin(obj,newOrigin)
-           %pose = obj.poseEstimator.getPose(); where the robot is actually 
            obj.trajOrigin = newOrigin;
            H = [cos(newOrigin(3)), -sin(newOrigin(3)), newOrigin(1);...
                 sin(newOrigin(3)),  cos(newOrigin(3)), newOrigin(2);...
                 0, 0, 1];
            obj.H_w_t = H;
         end
+        
+        function driveToPallet(obj, palletPose)
+            %TODO
+            center = [palletPose(1), palletPose(2)];
+            radius = palletSailModel.sail_width;
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
+            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
+            %Michaela, while you're testing this, assume that pallet pose
+            %has been found already and see if the robot will drive to it
+            %properly
+            %-Chris
+            
+            %Drive to 5cm in front of pallet, facing pallet
+            goalPose = [0;0;0]; %5cm facing pallet
+            obj.executeTrajectoryToRelativePose(goalPose, 1)
+            %Drive 5cm forward
+            obj.forwardTrajectory(0.05)
+        end
+        
+        function forward(obj, dist)
+            %Make robot go forward distance
+            %Consider making a trajectory class that's just a straight line
+            %and calling obj.executeTrajectory(forwardTraj)
+            %TODO
+        end
+        
+        function rotate(obj, theta)
+            %Make robot rotate theta
+            %Consider making a trajectory class that's just a rotation
+            %and calling obj.executeTrajectory(rotateTraj)
+            %TODO
+        end
+        
     end
     
 end
