@@ -51,16 +51,45 @@ classdef Perceptor < handle
            points = [xpts; ypts];
        end
        
-       function findLineCandidate(points)
+       function palletPose = findLineCandidate(obj, points)
             %points: [x;y]
-            x = points(1,:);
-            y = points(2,:);
-            Ixx = x' * x;
-            Iyy = y' * y;
-            Ixy = - x' * y;
-            Inertia = [Ixx Ixy;Ixy Iyy] / numPts; % normalized
-            lambda = eig(Inertia);
-            lambda = sqrt(lambda)*1000.0;
+            xPoints = points(1,:);
+            yPoints = points(2,:);
+            searchRad = 1.1*palletSailModel.sail_width/2;
+            for ii = 1:size(points,2)
+                xc = xPoints(ii);
+                yc = yPoints(ii);
+                deltaX = xPoints - xc;
+                deltaY = yPoints - yc;
+                distFromCentSqr = deltaX .* deltaX + deltaY .* deltaY;
+                mask = distFromCentSqr < searchRad^2;
+                
+                x = xPoints(mask)';
+                y = yPoints(mask)';
+                numPts = length(x);
+                disp('-----------------')
+                disp(numPts)
+                if numPts < 10
+                    continue
+                end
+                xBar = sum(x) / numPts;
+                yBar = sum(y) / numPts;
+                x = x - xBar;
+                y = y - yBar;
+                
+                Ixx = x' * x;
+                Iyy = y' * y;
+                Ixy = - x' * y;
+                Inertia = [Ixx Ixy;Ixy Iyy] / numPts; % normalized
+                lambda = eig(Inertia);
+                lambda = sqrt(lambda) * 1000;
+                disp(lambda)
+                if lambda(1) < 1.3 && abs(lambda(2) - 127) < 6 %allow for 5% error now
+                    th = atan2(2*Ixy,Iyy-Ixx)/2.0;
+                    palletPose = [xBar; yBar; th];
+                    break
+                end
+            end
        end
    end
 end
