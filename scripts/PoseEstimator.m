@@ -8,13 +8,13 @@ classdef PoseEstimator < handle
     methods (Static)
         function [E] = encoderDataGetter()
             global encoderData;
-            global updatedSincePull;
-            while ~updatedSincePull
+            global updatedSincePullEncoder;
+            while ~updatedSincePullEncoder
                 pause(0.001)
             end
             E = [encoderData(1), encoderData(2), encoderData(3)];
             % Left, Right, Timestamp
-            updatedSincePull = false;
+            updatedSincePullEncoder = false;
         end
     end
     

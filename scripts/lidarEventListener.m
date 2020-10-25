@@ -1,6 +1,6 @@
 function lidarEventListener(handle,event)
-    % encoderEventListener Invoked when new encoder data arrives.
-    % handle is the encoder object under rIF
+    % lidarEventListener Invoked when new lidar data arrives.
+    % handle is the laser object under rIF
     persistent lidarDataStarted;
     persistent lidarDataTimeStart;
     global lidarData;
