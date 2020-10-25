@@ -15,12 +15,12 @@ classdef mrplSystem < handle
     methods
         function obj = mrplSystem(rIF, model)
             obj = obj@handle;
-            obj.rIF = rIF;
             obj.model = model;
             obj.poseEstimator = PoseEstimator(model);
             obj.logger = Logger(true);
             obj.executor = Executor(model);
             obj.perceptor = Perceptor(model);
+            obj.rIF = rIF;
         end
         
         function executeTrajectory(obj, traj)

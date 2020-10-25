@@ -4,6 +4,7 @@ classdef Model < handle
         W2 = 0.045;
         t_delay = 0.1632;
         vMax = 0.200;
+        lidarOffset = -5;
     end
    
     methods

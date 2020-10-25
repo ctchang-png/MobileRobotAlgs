@@ -6,7 +6,7 @@ function encoderEventListener(handle,event)
     persistent encoderLStart;
     persistent encoderRStart;
     global encoderData;
-    global updatedSincePull;
+    global updatedSincePullEncoder;
     if isempty(encoderDataStarted)
         disp('Encoder Event Listener is Up');
         encoderDataStarted = 1;
@@ -20,6 +20,6 @@ function encoderEventListener(handle,event)
     encoderDataL = handle.LatestMessage.Vector.X - encoderLStart;
     encoderDataR = handle.LatestMessage.Vector.Y - encoderRStart;
     encoderData = [encoderDataL, encoderDataR, encoderDataTimeStamp];
-    updatedSincePull = true;
+    updatedSincePullEncoder = true;
     
 end

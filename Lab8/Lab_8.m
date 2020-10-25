@@ -1,6 +1,7 @@
 % Initialization
 clearvars
 clear encoderEventListener
+clear lidarEventListener
 clear PID_control
 clc
 clf
@@ -8,6 +9,7 @@ num = sum(uint8(char("My pet Brandon Rishi")));
 num = 0;
 rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
+rIF.laser.NewMessageFcn=@lidarEventListener;
 model = Model();
 system = mrplSystem(rIF, model);
 pause(1.0) 
