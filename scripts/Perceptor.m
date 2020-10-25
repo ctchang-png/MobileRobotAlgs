@@ -6,10 +6,11 @@ classdef Perceptor < handle
     %function findLineCandidate(Array of points in robot frame)
     %   Returns pose of sail
    properties
+       model
    end
    
    methods
-       function object = Perceptor()
+       function object = Perceptor(model)
            
        end
    end

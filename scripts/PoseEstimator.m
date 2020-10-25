@@ -2,8 +2,6 @@ classdef PoseEstimator < handle
     properties
         pose = [0;0;0]; %wrt world frame
         encoderData = [0;0;0];
-        trajOrigin = [0;0;0];
-        H_w_t = eye(3);
         model
     end
     
@@ -24,7 +22,6 @@ classdef PoseEstimator < handle
         function obj = PoseEstimator(model)
             obj = obj@handle;
             obj.model = model;
-            obj.setOrigin()
             
         end
  
@@ -46,14 +43,7 @@ classdef PoseEstimator < handle
             obj.pose = pose;
             obj.encoderData = newEncoderData;
         end
-        
-        function setOrigin(obj)
-            obj.trajOrigin = obj.pose;
-            trajOrigin = obj.trajOrigin;
-            obj.H_w_t = [cos(trajOrigin(3)), -sin(trajOrigin(3)), trajOrigin(1);...
-                         sin(trajOrigin(3)), cos(trajOrigin(3)), trajOrigin(2);...
-                         0, 0, 1];
-        end
+       
     end
     
 end
