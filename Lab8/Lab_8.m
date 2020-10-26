@@ -34,17 +34,17 @@ end
 
 
 %Main loop
-%{
+%
 for poseNo = 1:1
     palletPose = palletPoses(:,poseNo); %Theoretical position
     system.driveToPallet(palletPose);
     rIF.forksUp()
     pause(2.0)
     rIF.forksDown()
-    err = err_fn(args)
+    err = err_fn(args);
     disp(err)
     pause(15.0)
 end
 %}
 rIF.stop()
-system.logger.dispTermError()
+%system.logger.dispTermError()

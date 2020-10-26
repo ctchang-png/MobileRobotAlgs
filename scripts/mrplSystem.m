@@ -77,21 +77,28 @@ classdef mrplSystem < handle
             %TODO
             center = [palletPose(1), palletPose(2)];
             radius = palletSailModel.sail_width;
-            pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
-            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
+            %pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
+            %palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
+            
             %Michaela, while you're testing this, assume that pallet pose
             %has been found already and see if the robot will drive to it
             %properly
             %-Chris
-            
+            theta = palletPose(3);
             %Drive to 5cm in front of pallet, facing pallet
-            goalPose = [0;0;0]; %5cm facing pallet
-            obj.executeTrajectoryToRelativePose(goalPose, 1)
+            goalPose = [1, 1, atan2(0.05,0.45)]; %5cm facing pallet
+            obj.executeTrajectoryToRelativePose(goalPose, 1);
+            pause(2.0);
             %Drive 5cm forward
-            obj.forwardTrajectory(0.05)
+            obj.forward(0.05,theta);
         end
         
-        function forward(obj, dist)
+        function forward(obj, dist,theta)
+            x = obj.poseEstimator.pose(1) + dist*cos(theta);
+            y = obj.poseEstimator.pose(2) + dist*sin(theta);
+            th = 0;
+            forwardTraj = [ x, y, th];
+            obj.executeTrajectory(forwardTraj);
             %Make robot go forward distance
             %Consider making a trajectory class that's just a straight line
             %and calling obj.executeTrajectory(forwardTraj)
@@ -99,6 +106,8 @@ classdef mrplSystem < handle
         end
         
         function rotate(obj, theta)
+            rotateTraj = [0, 0, theta];
+            obj.executeTrajectory(rotateTraj);
             %Make robot rotate theta
             %Consider making a trajectory class that's just a rotation
             %and calling obj.executeTrajectory(rotateTraj)
