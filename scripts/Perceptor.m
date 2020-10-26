@@ -53,9 +53,13 @@ classdef Perceptor < handle
        
        function palletPose = findLineCandidate(obj, points)
             %points: [x;y]
+            %TODO
+            %Vectorize
+            %Filter bad points
             xPoints = points(1,:);
             yPoints = points(2,:);
             searchRad = 1.1*palletSailModel.sail_width/2;
+            %This can be vectorized
             for ii = 1:size(points,2)
                 xc = xPoints(ii);
                 yc = yPoints(ii);
@@ -67,9 +71,7 @@ classdef Perceptor < handle
                 x = xPoints(mask)';
                 y = yPoints(mask)';
                 numPts = length(x);
-                disp('-----------------')
-                disp(numPts)
-                if numPts < 10
+                if numPts < 20
                     continue
                 end
                 xBar = sum(x) / numPts;
@@ -80,7 +82,8 @@ classdef Perceptor < handle
                 Ixx = x' * x;
                 Iyy = y' * y;
                 Ixy = - x' * y;
-                Inertia = [Ixx Ixy;Ixy Iyy] / numPts; % normalized
+                Inertia = [Ixx, Ixy;Ixy, Iyy] / numPts; % normalized
+                disp(Inertia)
                 lambda = eig(Inertia);
                 lambda = sqrt(lambda) * 1000;
                 disp(lambda)
