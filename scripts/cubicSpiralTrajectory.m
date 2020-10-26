@@ -1,4 +1,4 @@
-classdef cubicSpiralTrajectory < handle
+classdef cubicSpiralTrajectory < ReferenceControl
     %cubicSpiral A planar trajectory generator.
     %
     %   Implements a planar trajectory specified in terms of three 
