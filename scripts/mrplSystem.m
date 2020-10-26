@@ -9,6 +9,7 @@ classdef mrplSystem < handle
         %traj stuff will eventually migrate to a planner class
         trajOrigin = [0;0;0];
         trajectory
+        refControl
         H_w_t = [1,0,0;0,1,0;0,0,1];
     end
     
@@ -84,20 +85,21 @@ classdef mrplSystem < handle
             %has been found already and see if the robot will drive to it
             %properly
             %-Chris
-            theta = palletPose(3);
+            %theta = palletPose(3);
             %Drive to 5cm in front of pallet, facing pallet
             goalPose = [1, 1, atan2(0.05,0.45)]; %5cm facing pallet
             obj.executeTrajectoryToRelativePose(goalPose, 1);
             pause(2.0);
             %Drive 5cm forward
-            obj.forward(0.05,theta);
+            obj.forward(0.05);
         end
         
-        function forward(obj, dist,theta)
-            x = obj.poseEstimator.pose(1) + dist*cos(theta);
-            y = obj.poseEstimator.pose(2) + dist*sin(theta);
+        function forward(obj, dist)
+            x = dist;
+            y = 0;
             th = 0;
-            forwardTraj = [ x, y, th];
+            sgn = 1;
+            forwardTraj = planTrajectory(x,y, th, sgn);
             obj.executeTrajectory(forwardTraj);
             %Make robot go forward distance
             %Consider making a trajectory class that's just a straight line
