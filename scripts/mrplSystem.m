@@ -6,7 +6,6 @@ classdef mrplSystem < handle
         logger
         executor
         perceptor
-        %traj stuff will eventually migrate to a planner class
         trajOrigin = [0;0;0];
         trajectory
         refControl
@@ -15,6 +14,8 @@ classdef mrplSystem < handle
     
     methods
         function obj = mrplSystem(rIF, model)
+            %rIF -> instance of robotIF
+            %model -> instance of Model
             obj = obj@handle;
             obj.model = model;
             obj.poseEstimator = PoseEstimator(model);
@@ -25,6 +26,8 @@ classdef mrplSystem < handle
         end
         
         function executeTrajectory(obj, traj)
+            %traj -> reference trajectory, an instance of a sublcass of
+            %ReferenceControl
             startTime = obj.rIF.toc();
             t = 0;
             Tf = traj.getTrajectoryDuration();
@@ -59,6 +62,8 @@ classdef mrplSystem < handle
         end
         
         function executeTrajectoryToRelativePose(obj, pose, sign)
+            %pose -> [x;y;th];
+            %sign -> -1 or +1, denotes reverse or forward
             x = pose(1); y = pose(2); th = pose(3);
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
             traj.planVelocities(obj.model.vMax)
@@ -67,24 +72,24 @@ classdef mrplSystem < handle
         end
         
         function setTrajOrigin(obj,newOrigin)
-           obj.trajOrigin = newOrigin;
-           H = [cos(newOrigin(3)), -sin(newOrigin(3)), newOrigin(1);...
-                sin(newOrigin(3)),  cos(newOrigin(3)), newOrigin(2);...
-                0, 0, 1];
-           obj.H_w_t = H;
+            %newOrigin -> [x,y,th], will always be the terminal pose of the
+            %previous reference trajectory
+            obj.trajOrigin = newOrigin;
+            H = [cos(newOrigin(3)), -sin(newOrigin(3)), newOrigin(1);...
+                 sin(newOrigin(3)),  cos(newOrigin(3)), newOrigin(2);...
+                 0, 0, 1];
+            obj.H_w_t = H;
         end
         
         function driveToPallet(obj, palletPose)
+            %palletPose -> [x;y;th] where the pallet ~should~ be
+            
             %TODO
             center = [palletPose(1), palletPose(2)];
             radius = palletSailModel.sail_width;
             %pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
             %palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
             
-            %Michaela, while you're testing this, assume that pallet pose
-            %has been found already and see if the robot will drive to it
-            %properly
-            %-Chris
             %theta = palletPose(3);
             %Drive to 5cm in front of pallet, facing pallet
             goalPose = [1, 1, atan2(0.05,0.45)]; %5cm facing pallet
