@@ -100,25 +100,22 @@ classdef mrplSystem < handle
         end
         
         function forward(obj, dist)
+            %Make robot go forward distance
             x = dist;
             y = 0;
             th = 0;
             sgn = 1;
             forwardTraj = forwardTrajectory.planTrajectory(x,y, th, sgn);
             obj.executeTrajectory(forwardTraj);
-            %Make robot go forward distance
-            %Consider making a trajectory class that's just a straight line
-            %and calling obj.executeTrajectory(forwardTraj)
-            %TODO
+            
         end
         
         function rotate(obj, theta)
+            %Make robot rotate theta 
+            %TODO - rotateTrajectory class 
             rotateTraj = [0, 0, theta];
             obj.executeTrajectory(rotateTraj);
-            %Make robot rotate theta
-            %Consider making a trajectory class that's just a rotation
-            %and calling obj.executeTrajectory(rotateTraj)
-            %TODO
+            
         end
         
     end
