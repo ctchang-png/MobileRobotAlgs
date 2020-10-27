@@ -56,43 +56,53 @@ classdef Perceptor < handle
             %TODO
             %Vectorize
             %Filter bad points
-            xPoints = points(1,:);
-            yPoints = points(2,:);
+            xPoints = points(1,:)';
+            yPoints = points(2,:)';
             searchRad = 1.1*palletSailModel.sail_width/2;
-            %This can be vectorized
-            for ii = 1:size(points,2)
-                xc = xPoints(ii);
-                yc = yPoints(ii);
-                deltaX = xPoints - xc;
-                deltaY = yPoints - yc;
-                distFromCentSqr = deltaX .* deltaX + deltaY .* deltaY;
-                mask = distFromCentSqr < searchRad^2;
-                
-                x = xPoints(mask)';
-                y = yPoints(mask)';
-                numPts = length(x);
-                if numPts < 20
-                    continue
-                end
-                xBar = sum(x) / numPts;
-                yBar = sum(y) / numPts;
-                x = x - xBar;
-                y = y - yBar;
-                
+            xrep = repmat(xPoints, 1, length(xPoints));
+            yrep = repmat(yPoints, 1, length(yPoints));
+
+            xcrep = repmat(diag(xrep)', length(xPoints), 1);
+            ycrep = repmat(diag(yrep)', length(yPoints), 1);
+
+            %Each col i is coord relative to point i
+            xc = xrep - xcrep;
+            yc = yrep - ycrep;
+            
+            distFromCentSqr = xc.*xc + yc.*yc; 
+            mask = distFromCentSqr < searchRad^2;
+
+            x = xrep .* mask;
+            y = yrep .* mask;
+            numPts = sum(mask, 1);
+            xBar = sum(x, 1) ./ numPts;
+            xBarRep = repmat(xBar, size(xrep, 1), 1);
+            yBar = sum(y, 1) ./ numPts;
+            yBarRep = repmat(yBar, size(yrep, 1), 1);
+            X = (x - xBarRep);
+            Y = (y - yBarRep);
+
+            diagonal = zeros(size(numPts)); %allocate
+            thetas = zeros(size(numPts));
+            for col = 1:length(numPts)
+                colmask = mask(:,col);
+                x = X(:,col);
+                x = x(colmask);
+                y = Y(:,col);
+                y = y(colmask);
+                disp(y)
                 Ixx = x' * x;
                 Iyy = y' * y;
                 Ixy = - x' * y;
-                Inertia = [Ixx, Ixy;Ixy, Iyy] / numPts; % normalized
-                disp(Inertia)
+                Inertia = [Ixx, Ixy;Ixy, Iyy] / numPts(col); % normalized
                 lambda = eig(Inertia);
                 lambda = sqrt(lambda) * 1000;
-                disp(lambda)
-                if lambda(1) < 1.3 && abs(lambda(2) - 127) < 6 %allow for 5% error now
-                    th = atan2(2*Ixy,Iyy-Ixx)/2.0;
-                    palletPose = [xBar; yBar; th];
-                    break
-                end
+                diagonal(col) = norm([x(end) - x(1); y(end) - y(1)]);
+                thetas(col) = atan2(2*Ixy, Iyy-Ixx)/2;
             end
+            diff = abs(diagonal - 0.1270);
+            idx = find(diff == min(diff));
+            palletPose = [xBar(idx), yBar(idx), thetas(idx)];
        end
    end
 end
