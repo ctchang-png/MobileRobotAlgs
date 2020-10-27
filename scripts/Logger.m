@@ -74,8 +74,7 @@ classdef Logger < handle
            estPose = [obj.est_logs_X(obj.plot_idx), obj.est_logs_Y(obj.plot_idx)];
            realPose = [obj.real_logs_X(obj.plot_idx), obj.real_logs_Y(obj.plot_idx)];
            odomErr = 1000*norm(predPose-estPose);
-           trueErr = 1000*norm([0,0] - realPose); %ASSUMES END IS 0,0
-           fprintf("Odom error: %2.1fmm, true error: %2.1fmm\n", odomErr, trueErr)
+           fprintf("Odom error: %2.1fmm\n", odomErr)
         end
     end
     

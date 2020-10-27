@@ -41,12 +41,19 @@ classdef Perceptor < handle
            X = obj.irToXy(1:360, ranges);
            x = X(1,:);
            y = X(2,:);
+           figure(3)
+           hold on
+           plot(x, y)
+           plot(center(1), center(2), 'ro')
+           plot(center(1), center(2) + radius, 'rx')
+           plot(center(1), center(2) - radius, 'rx')
+           hold off
            mask = zeros(1, 360);
            for ii = 1:360
                 if isnan(x(ii)) || isnan(y(ii))
                     mask(ii) = false;
                 else
-                    mask(ii) = radius <= norm([x(ii);y(ii)]-center);
+                    mask(ii) = radius >= norm([x(ii);y(ii)]-center);
                 end
            end
            mask = boolean(mask);
@@ -62,7 +69,7 @@ classdef Perceptor < handle
             %Filter bad points
             xPoints = points(1,:)';
             yPoints = points(2,:)';
-            searchRad = 1.1*palletSailModel.sail_width/2;
+            searchRad = 1.05*palletSailModel.sail_width/2;
             xrep = repmat(xPoints, 1, length(xPoints));
             yrep = repmat(yPoints, 1, length(yPoints));
 
@@ -85,7 +92,6 @@ classdef Perceptor < handle
             yBarRep = repmat(yBar, size(yrep, 1), 1);
             X = (x - xBarRep);
             Y = (y - yBarRep);
-
             diagonal = zeros(size(numPts)); %allocate
             thetas = zeros(size(numPts));
             for col = 1:length(numPts)
@@ -100,11 +106,10 @@ classdef Perceptor < handle
                 Inertia = [Ixx, Ixy;Ixy, Iyy] / numPts(col); % normalized
                 lambda = eig(Inertia);
                 lambda = sqrt(lambda) * 1000;
-                diagonal(col) = norm([x(end) - x(1); y(end) - y(1)]);
+                diagonal(col) = norm([max(x) - min(x); max(y) - min(y)]);
                 thetas(col) = atan2(2*Ixy, Iyy-Ixx)/2;
             end
-            theoDiag = norm([palletSailModel.sail_width, palletSailModel.sail_depth]);
-            diff = abs(diagonal - theoDiag);
+            diff = abs(diagonal - 0.127);
             idx = find(diff == min(diff));
             idx = idx(1); %in case there are two identical means
             palletPose = [xBar(idx), yBar(idx), thetas(idx)];

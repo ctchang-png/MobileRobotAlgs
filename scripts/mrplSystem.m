@@ -12,6 +12,18 @@ classdef mrplSystem < handle
         H_w_t = [1,0,0;0,1,0;0,0,1];
     end
     
+    methods (Access = private)
+        function p_r = world2robot(obj, p_w)
+            %p_w -> [x;y;th] pose in world frame
+           rPose = obj.poseEstimator.getPose();
+           H_w_r = [cos(rPose(3)), -sin(rPose(3)), rPose(1);...
+                sin(rPose(3)),  cos(rPose(3)), rPose(2);...
+                0, 0, 1];
+           X = H_w_r \ [p_w(1:2) ; 1];
+           p_r = [X ; p_w(3) - rPose(3)];
+        end
+    end
+    
     methods
         function obj = mrplSystem(rIF, model)
             %rIF -> instance of robotIF
@@ -85,46 +97,52 @@ classdef mrplSystem < handle
             %palletPose -> [x;y;th] where the pallet ~should~ be
             
             %TODO
-            center = [palletPose(1), palletPose(2)];
+            center = [palletPose(1); palletPose(2)];
             radius = palletSailModel.sail_width;
             %add protection to empty POI
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
-            disp('observed pallet pose')
-            disp(palletPose)
             %Drive to 5cm in front of pallet, facing pallet
             %0cm for now
             H = [cos(palletPose(3)), -sin(palletPose(3)), palletPose(1);...
                  sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
                  0, 0, 1];
-            palletOffset = 0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth);
-            X = H*[-obj.model.forkOffset - palletOffset; 1];
+            palletOffset = [0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth); 0];
+            standoff = 0.050;
+            X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
             obj.executeTrajectoryToRelativePose(goalPose, 1);
-            pause(2.0);
             %Drive 5cm forward
-            %obj.forward(0.05);
-        end
-        
-        function forward(obj, dist)
-            %Make robot go forward distance
-            x = dist;
-            y = 0;
-            th = 0;
-            sgn = 1;
-            forwardTraj = forwardTrajectory.planTrajectory(x,y, th, sgn);
-            obj.executeTrajectory(forwardTraj);
+            c = obj.world2robot([center; 0]);
+            c = c(1:2);
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, c);
+            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); 
+            %rotate to face
+            %drive to
+            standoff = palletPose(1) - obj.model.forkOffset(1) - palletOffset(1);
+            disp(standoff)
+            obj.forward(standoff, 0.03);
             
+            pause(2.0)
         end
         
-        function rotate(obj, theta)
+        function forward(obj, dist, vel)
+            %Make robot go forward distance
+            traj = forwardTrajectory([dist, vel]);
+            obj.trajectory = traj;
+            obj.executeTrajectory(traj);
+            obj.rIF.stop()
+        end
+        
+        function rotate(obj, theta, w)
             %Make robot rotate theta 
             %TODO - rotateTrajectory class 
-            rotateTraj = [0, 0, theta];
-            obj.executeTrajectory(rotateTraj);
-            
+            traj = rotateTrajectory([theta, w]);
+            obj.trajectory = traj;
+            obj.executeTrajectory(traj);
+            obj.rIF.stop()
         end
-        
+   
     end
     
 end

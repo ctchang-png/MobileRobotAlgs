@@ -1,46 +1,47 @@
-classdef forwardTrajectory < ReferenceControl
+classdef rotateTrajectory < ReferenceControl
     %Needs to be filled in
     %probably doesn't need to be as complicated as cubicSpiral
     properties
         numSamples = 0;
-        dist = 0;
-        V = 0;
+        theta = 0;
+        w = 0;
     end
     
     methods (Access = private)
        %Put any helper methods here if necessary
+        
     end
     
     methods (Access = public)
-        function obj = forwardTrajectory(parameters)
+        function obj = rotateTrajectory(parameters)
             obj = obj@ReferenceControl();
-            obj.dist = parameters(1);
-            obj.V = parameters(2);
+            obj.theta = parameters(1);
+            obj.w = parameters(2);
         end
         
       
         function pose = getPoseAtTime(obj, t)
             Tf = obj.getTrajectoryDuration;
             if t > Tf
-                x = obj.dist;
+                th = obj.theta;
             else
-                x = obj.dist * (t / Tf);
+                th = obj.theta * (t / Tf);
             end
+            x = 0;
             y = 0;
-            th = 0;
             pose  = [x ; y ; th];
         end
         
         function V = getVAtTime(obj, t)
-            V = obj.V; %No trapezoidal implemented currently
+            V = 0;
         end
         
         function w = getwAtTime(obj, t)
-            w = 0;
+            w = obj.w;
         end
         
         function t = getTrajectoryDuration(obj)
-            t  = abs(obj.dist) / obj.V;
+            t  = abs(obj.theta) / obj.w;
         end
 
     end 

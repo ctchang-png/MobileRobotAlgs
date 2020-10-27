@@ -6,7 +6,6 @@ clear PID_control
 clc
 clf
 num = sum(uint8(char("My pet Brandon Rishi")));
-num = 0;
 rIF = robotIF(num, true);
 rIF.encoders.NewMessageFcn=@encoderEventListener;
 rIF.laser.NewMessageFcn=@lidarEventListener;
@@ -21,14 +20,12 @@ palletPoses = [0.45, 0.00, 0.0;
                0.45, 0.05, 0.0]';
            
 if(rIF.rob.do_sim) % &&~doReadLoggedImages not sure what this is
-    for poseNo = 2:2
+    for poseNo = 3:3
         palletPose = palletPoses(:,poseNo);
         
         palletPose(1) = palletPose(1)*(1+0.01*randn);
         palletPose(2) = palletPose(2)*(1+0.01*randn);
         palletPose(3) = palletPose(3)*(1+0.05*randn);
-        disp('real pallet pose')
-        disp(palletPose')
         palletShape = palletSailShape(true,palletPose);
         rIF.addObjects(palletShape);
     end
@@ -36,17 +33,16 @@ end
 pause(1.0)
 
 %Main loop
-for poseNo = 2:2
+for poseNo = 3:3
     palletPose = palletPoses(:,poseNo); %Theoretical position
     system.driveToPallet(palletPose);
     rIF.forksUp()
     pause(2.0)
     rIF.forksDown()
-    err = err_fn(args);
-    disp(err)
-    pause(15.0)
+    system.logger.dispTermError()
+    pause(2.0)
 end
 
-rIF.stopLaser
+rIF.stopLaser()
 rIF.stop()
 %system.logger.dispTermError()
