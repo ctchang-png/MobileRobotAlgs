@@ -104,7 +104,7 @@ classdef mrplSystem < handle
             y = 0;
             th = 0;
             sgn = 1;
-            forwardTraj = planTrajectory(x,y, th, sgn);
+            forwardTraj = forwardTrajectory.planTrajectory(x,y, th, sgn);
             obj.executeTrajectory(forwardTraj);
             %Make robot go forward distance
             %Consider making a trajectory class that's just a straight line
