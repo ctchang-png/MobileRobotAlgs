@@ -87,16 +87,23 @@ classdef mrplSystem < handle
             %TODO
             center = [palletPose(1), palletPose(2)];
             radius = palletSailModel.sail_width;
-            %pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
-            %palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
-            
-            %theta = palletPose(3);
+            %add protection to empty POI
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
+            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
+            disp('observed pallet pose')
+            disp(palletPose)
             %Drive to 5cm in front of pallet, facing pallet
-            goalPose = [1, 1, atan2(0.05,0.45)]; %5cm facing pallet
+            %0cm for now
+            H = [cos(palletPose(3)), -sin(palletPose(3)), palletPose(1);...
+                 sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
+                 0, 0, 1];
+            palletOffset = 0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth);
+            X = H*[-obj.model.forkOffset - palletOffset; 1];
+            goalPose = [X(1:2); palletPose(3)];
             obj.executeTrajectoryToRelativePose(goalPose, 1);
             pause(2.0);
             %Drive 5cm forward
-            obj.forward(0.05);
+            %obj.forward(0.05);
         end
         
         function forward(obj, dist)

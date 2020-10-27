@@ -12,6 +12,7 @@ rIF.encoders.NewMessageFcn=@encoderEventListener;
 rIF.laser.NewMessageFcn=@lidarEventListener;
 model = Model();
 system = mrplSystem(rIF, model);
+rIF.startLaser()
 pause(1.0) 
 
 %Targets
@@ -20,22 +21,22 @@ palletPoses = [0.45, 0.00, 0.0;
                0.45, 0.05, 0.0]';
            
 if(rIF.rob.do_sim) % &&~doReadLoggedImages not sure what this is
-    for poseNo = 1:1
+    for poseNo = 2:2
         palletPose = palletPoses(:,poseNo);
         
         palletPose(1) = palletPose(1)*(1+0.01*randn);
         palletPose(2) = palletPose(2)*(1+0.01*randn);
         palletPose(3) = palletPose(3)*(1+0.05*randn);
-
+        disp('real pallet pose')
+        disp(palletPose')
         palletShape = palletSailShape(true,palletPose);
         rIF.addObjects(palletShape);
     end
 end
-
+pause(1.0)
 
 %Main loop
-%
-for poseNo = 1:1
+for poseNo = 2:2
     palletPose = palletPoses(:,poseNo); %Theoretical position
     system.driveToPallet(palletPose);
     rIF.forksUp()
@@ -45,6 +46,7 @@ for poseNo = 1:1
     disp(err)
     pause(15.0)
 end
-%}
+
+rIF.stopLaser
 rIF.stop()
 %system.logger.dispTermError()

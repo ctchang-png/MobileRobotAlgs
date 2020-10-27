@@ -37,13 +37,17 @@ classdef Perceptor < handle
        end
        
        function points = ROI_circle(obj, radius, center)
-           ranges = lidarDataGetter();
+           ranges = Perceptor.lidarDataGetter();
            X = obj.irToXy(1:360, ranges);
            x = X(1,:);
            y = X(2,:);
            mask = zeros(1, 360);
            for ii = 1:360
-                mask(ii) = radius >= norm([x(ii);y(ii)]-center);
+                if isnan(x(ii)) || isnan(y(ii))
+                    mask(ii) = false;
+                else
+                    mask(ii) = radius <= norm([x(ii);y(ii)]-center);
+                end
            end
            mask = boolean(mask);
            xpts = x(mask);
@@ -90,7 +94,6 @@ classdef Perceptor < handle
                 x = x(colmask);
                 y = Y(:,col);
                 y = y(colmask);
-                disp(y)
                 Ixx = x' * x;
                 Iyy = y' * y;
                 Ixy = - x' * y;
@@ -100,8 +103,10 @@ classdef Perceptor < handle
                 diagonal(col) = norm([x(end) - x(1); y(end) - y(1)]);
                 thetas(col) = atan2(2*Ixy, Iyy-Ixx)/2;
             end
-            diff = abs(diagonal - 0.1270);
+            theoDiag = norm([palletSailModel.sail_width, palletSailModel.sail_depth]);
+            diff = abs(diagonal - theoDiag);
             idx = find(diff == min(diff));
+            idx = idx(1); %in case there are two identical means
             palletPose = [xBar(idx), yBar(idx), thetas(idx)];
        end
    end
