@@ -3,7 +3,9 @@ classdef forwardTrajectory < ReferenceControl
     %probably doesn't need to be as complicated as cubicSpiral
     properties
         numSamples = 0;
-        parms = 0;
+        parms = [0 0 1];
+        sgn=0.0;
+        rampLength = 0.05;
         distArray = [];
         timeArray = [];
         poseArray = [];
@@ -37,7 +39,7 @@ classdef forwardTrajectory < ReferenceControl
     
     methods (Access = public)
         function obj = forwardTrajectory(parameters, numSamples)
-            obj = obj@handle();
+            obj = obj@ReferenceControl();
             obj.parms = parameters;
             obj.numSamples = numSamples;
             obj.computeTimeSeries();
@@ -71,7 +73,7 @@ classdef forwardTrajectory < ReferenceControl
             t  = obj.timeArray(:,obj.numSamples);  
         end
         
-        function u = planTrajectory(x,y,th,sgn);
+        function u = planTrajectory(x,y,th,sgn)
             t = 0;
             for t = 1:obj.numSamples
                 if t == 1
