@@ -8,7 +8,7 @@ classdef mrplSystem < handle
         perceptor
         trajOrigin = [0;0;0];
         trajectory
-        refControl
+
         H_w_t = [1,0,0;0,1,0;0,0,1];
     end
     
@@ -66,6 +66,7 @@ classdef mrplSystem < handle
 
                 pause(0.05)
             end
+            obj.rIF.stop()
             termRefPose = traj.getPoseAtTime(Tf);
             Origin = obj.H_w_t * [termRefPose(1:2) ; 1];
             Origin(3) = termRefPose(3) + obj.trajOrigin(3);

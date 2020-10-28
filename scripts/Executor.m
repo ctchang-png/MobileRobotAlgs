@@ -13,7 +13,7 @@ classdef Executor < handle
             V = u(1);
             om = u(2);
             W = obj.model.W2;
-            vMax = obj.model.vMax;
+            vMax = 0.50;
             
             Vr = V + om*W;
             Vl = V - om*W;

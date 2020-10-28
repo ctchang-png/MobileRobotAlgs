@@ -32,7 +32,7 @@ classdef forwardTrajectory < ReferenceControl
         end
         
         function V = getVAtTime(obj, t)
-            V = obj.V; %No trapezoidal implemented currently
+            V = obj.V * sign(obj.dist); %No trapezoidal implemented currently
         end
         
         function w = getwAtTime(obj, t)
