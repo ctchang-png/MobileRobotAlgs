@@ -41,6 +41,7 @@ classdef Perceptor < handle
            X = obj.irToXy(1:360, ranges);
            x = X(1,:);
            y = X(2,:);
+           %{
            figure(3)
            hold on
            plot(x, y)
@@ -48,6 +49,7 @@ classdef Perceptor < handle
            plot(center(1), center(2) + radius, 'rx')
            plot(center(1), center(2) - radius, 'rx')
            hold off
+           %}
            mask = zeros(1, 360);
            for ii = 1:360
                 if isnan(x(ii)) || isnan(y(ii))
@@ -64,9 +66,7 @@ classdef Perceptor < handle
        
        function palletPose = findLineCandidate(obj, points)
             %points: [x;y]
-            %TODO
-            %Vectorize
-            %Filter bad points
+            %TODO: Add defense against walls
             xPoints = points(1,:)';
             yPoints = points(2,:)';
             searchRad = 1.05*palletSailModel.sail_width/2;

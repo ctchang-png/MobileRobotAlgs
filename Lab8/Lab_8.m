@@ -1,18 +1,12 @@
 % Initialization
 clearvars
-clear encoderEventListener
-clear lidarEventListener
-clear PID_control
+
 clc
 clf
 num = sum(uint8(char("My pet Brandon Rishi")));
-rIF = robotIF(num, true);
-rIF.encoders.NewMessageFcn=@encoderEventListener;
-rIF.laser.NewMessageFcn=@lidarEventListener;
 model = Model();
 system = mrplSystem(rIF, model);
-rIF.startLaser()
-pause(1.0) 
+
 
 %Targets
 palletPoses = [0.45, 0.00, 0.0;

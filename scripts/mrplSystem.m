@@ -20,7 +20,7 @@ classdef mrplSystem < handle
                 sin(rPose(3)),  cos(rPose(3)), rPose(2);...
                 0, 0, 1];
            X = H_w_r \ [p_w(1:2) ; 1];
-           p_r = [X ; p_w(3) - rPose(3)];
+           p_r = [X(1:2) ; p_w(3) - rPose(3)];
         end
     end
     
@@ -30,11 +30,19 @@ classdef mrplSystem < handle
             %model -> instance of Model
             obj = obj@handle;
             obj.model = model;
-            obj.poseEstimator = PoseEstimator(model);
+            obj.poseEstimator = PoseEstimator(rIF.rob.initial_pose, model);
             obj.logger = Logger(true);
             obj.executor = Executor(model);
             obj.perceptor = Perceptor(model);
+            clear encoderEventListener
+            clear lidarEventListener
+            clear PID_control
+            rIF.encoders.NewMessageFcn=@encoderEventListener;
+            rIF.laser.NewMessageFcn=@lidarEventListener;
+            obj.setTrajOrigin(rIF.rob.initial_pose)
             obj.rIF = rIF;
+            rIF.startLaser()
+            pause(1.0) 
         end
         
         function executeTrajectory(obj, traj)
@@ -52,7 +60,6 @@ classdef mrplSystem < handle
                     %init
                     initialized = true;
                 end
-                %clc
                 t = obj.rIF.toc() - startTime;
                 est_pose = obj.poseEstimator.getPose();
                 u = controller.getControl(est_pose, min(t,Tf));
@@ -94,42 +101,47 @@ classdef mrplSystem < handle
             obj.H_w_t = H;
         end
         
-        function driveToPallet(obj, palletPose)
+        function driveToPallet(obj, palletRefPose)
             %palletPose -> [x;y;th] where the pallet ~should~ be
             
             %TODO
-            center = [palletPose(1); palletPose(2)];
+            center = obj.world2robot(palletRefPose);
             radius = palletSailModel.sail_width;
             %add protection to empty POI
-            pointsOfInterest = obj.perceptor.ROI_circle(radius, center);
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
             %Drive to 5cm in front of pallet, facing pallet
             %0cm for now
-            H = [cos(palletPose(3)), -sin(palletPose(3)), palletPose(1);...
-                 sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
+            H = [cos(palletRefPose(3)), -sin(palletRefPose(3)), palletRefPose(1);...
+                 sin(palletRefPose(3)), cos(palletRefPose(3)), palletRefPose(2);...
                  0, 0, 1];
             palletOffset = [0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth); 0];
-            standoff = 0.050;
+            standoff = 0.10;
             X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
+            goalPose = obj.world2robot(goalPose);
             obj.executeTrajectoryToRelativePose(goalPose, 1);
+            
+            
             %Drive 5cm forward
-            c = obj.world2robot([center; 0]);
-            c = c(1:2);
-            pointsOfInterest = obj.perceptor.ROI_circle(radius, c);
-            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); 
-            %rotate to face
-            %drive to
+            
+            center = obj.world2robot(palletRefPose);
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
+            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest);
+            %Relative to Robot
             standoff = palletPose(1) - obj.model.forkOffset(1) - palletOffset(1);
             disp(standoff)
-            obj.forward(standoff, 0.03);
-            
-            pause(2.0)
+            tmp = obj.rIF.rob.sim_motion.pose;
+            obj.forward(standoff);
+            curr = obj.rIF.rob.sim_motion.pose;
+            disp(curr - tmp)
         end
         
-        function forward(obj, dist, vel)
+        function forward(obj, dist)
             %Make robot go forward distance
-            traj = forwardTrajectory([dist, vel]);
+            x = abs(dist); y = 0; th = 0;
+            traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign(dist));
+            traj.planVelocities(0.06)
             obj.trajectory = traj;
             obj.executeTrajectory(traj);
             obj.rIF.stop()
@@ -137,13 +149,23 @@ classdef mrplSystem < handle
         
         function rotate(obj, theta, w)
             %Make robot rotate theta 
-            %TODO - rotateTrajectory class 
+            %TODO: implement a trapezoidal w profile
             traj = rotateTrajectory([theta, w]);
             obj.trajectory = traj;
             obj.executeTrajectory(traj);
             obj.rIF.stop()
         end
    
+        function p_w = robot2world(obj, p_r)
+            %p_w -> [x;y;th] pose in world frame
+           rPose = obj.poseEstimator.getPose();
+           H_w_r = [cos(rPose(3)), -sin(rPose(3)), rPose(1);...
+                sin(rPose(3)),  cos(rPose(3)), rPose(2);...
+                0, 0, 1];
+           X = H_w_r * [p_r(1:2) ; 1];
+           p_w = [X(1:2) ; p_r(3) - rPose(3)];
+        end
+        
     end
     
 end

@@ -19,9 +19,10 @@ classdef PoseEstimator < handle
     end
     
     methods
-        function obj = PoseEstimator(model)
+        function obj = PoseEstimator(initial_pose, model)
             obj = obj@handle;
             obj.model = model;
+            obj.pose = initial_pose;
             
         end
  

@@ -41,7 +41,6 @@ classdef Controller < handle
             ex = e_r(1);
             ey = e_r(2);
             eth = p_ref_t(3) + obj.trajOrigin(3) - pose(3);
-            clc
             up = [obj.kx*ex ; obj.ky*ey*sign(Vref) + obj.kth*eth];
             if sum(isnan(up)) ~= 0
                 up = [0;0];
