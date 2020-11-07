@@ -5,6 +5,7 @@ clc
 clf
 num = sum(uint8(char("My pet Brandon Rishi")));
 model = Model();
+rIF = robotIF(num, true);
 system = mrplSystem(rIF, model);
 
 

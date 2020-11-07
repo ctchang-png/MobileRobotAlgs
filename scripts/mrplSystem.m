@@ -153,7 +153,7 @@ classdef mrplSystem < handle
             traj = rotateTrajectory([theta, w]);
             obj.trajectory = traj;
             obj.executeTrajectory(traj);
-            obj.rIF.stop()
+            obj.rIF.stop();
         end
    
         function p_w = robot2world(obj, p_r)
