@@ -135,6 +135,7 @@ classdef mrplSystem < handle
             obj.forward(standoff);
             curr = obj.rIF.rob.sim_motion.pose;
             disp(curr - tmp)
+            % obj.rotate(2*pi,0.5); Test
         end
         
         function forward(obj, dist)
@@ -149,7 +150,6 @@ classdef mrplSystem < handle
         
         function rotate(obj, theta, w)
             %Make robot rotate theta 
-            %TODO: implement a trapezoidal w profile
             traj = rotateTrajectory([theta, w]);
             obj.trajectory = traj;
             obj.executeTrajectory(traj);
