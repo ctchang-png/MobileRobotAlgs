@@ -3,6 +3,7 @@ classdef PoseEstimator < handle
         pose = [0;0;0]; %wrt world frame
         encoderData = [0;0;0];
         model
+        map
     end
     
     methods (Static)
@@ -19,14 +20,31 @@ classdef PoseEstimator < handle
     end
     
     methods
-        function obj = PoseEstimator(initial_pose, model)
+        function obj = PoseEstimator(initial_pose, model, map)
             obj = obj@handle;
             obj.model = model;
             obj.pose = initial_pose;
-            
+            obj.map = map;
         end
  
         function pose = getPose(obj)
+            %For now assume use_DR and use_triangulation are mutually
+            %exclusive
+            use_odom = true;
+            use_tri = false;
+            
+            poseOdom = obj.getPoseOdom();
+            if use_odom && ~use_tri
+                pose = poseOdom;
+            elseif use_tri && ~use_odom
+                pose = poseTri;
+            else
+                error('Not Yet implemented')
+            end
+            obj.pose = pose;
+        end
+       
+        function pose = getPoseOdom(obj)
             %Update pose on call. Probably better for encoderEventListener
             %to update pose
             newEncoderData = obj.encoderDataGetter();
@@ -41,10 +59,15 @@ classdef PoseEstimator < handle
             th = th + dth/2;
             pose = [x;y;th];
             
-            obj.pose = pose;
             obj.encoderData = newEncoderData;
         end
-       
+        
+        function pose = getPoseTri(obj, points)
+            inPose = obj.pose;
+            maxIters = 100; 
+            points = [points ; ones(1, size(points, 2))];
+            [success, pose] = obj.map.refinePose(inPose,points,maxIters);  
+        end
     end
     
 end

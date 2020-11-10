@@ -36,6 +36,11 @@ classdef Perceptor < handle
             X = [x, y]';
        end
        
+       function points = allPoints(obj)
+          ranges = Perceptor.lidarDataGetter();
+          points = obj.irToXy(1:360, ranges);
+       end
+       
        function points = ROI_circle(obj, radius, center)
            ranges = Perceptor.lidarDataGetter();
            X = obj.irToXy(1:360, ranges);

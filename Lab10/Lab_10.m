@@ -3,13 +3,23 @@ clearvars
 clc
 clf
 num = sum(uint8(char("Fido")));
+num = 0;
 model = Model();
-initialPoseVec = [0.6096; 0.6096; 0.0];
+initialPoseVec = [0.0; 0.0; 0.0];
 rIF = robotIF(num, true, initialPoseVec);
-map = [];
+
+p1 = [-2 ; -2];
+p2 = [ 2 ; -2];
+p3 = [ 2 ; 2];
+p4 = [-2 ; 2];
+lines_p1 = [p1 p2 p3 p4];
+lines_p2 = [p2 p3 p4 p1];
+map = lineMapLocalizer(lines_p1, lines_p2, 0.3, 0.01, 0.0005);
+
+
 system = mrplSystem(rIF, model, map);
 
-
+%{
 worldLineArray = worldModel.createThreeWalls();
 if rIF.rob.do_sim
     wallsShape = polyLineShape(worldLineArray);
@@ -43,3 +53,4 @@ pause(2.0)
 rIF.forksDown()
 system.forward(-0.05)
 system.rotate(pi, 1.0);
+%}

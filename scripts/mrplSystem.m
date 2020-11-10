@@ -25,12 +25,13 @@ classdef mrplSystem < handle
     end
     
     methods
-        function obj = mrplSystem(rIF, model)
+        function obj = mrplSystem(rIF, model, map)
             %rIF -> instance of robotIF
             %model -> instance of Model
+            %map -> instance of lineMapLocalizer
             obj = obj@handle;
             obj.model = model;
-            obj.poseEstimator = PoseEstimator(rIF.rob.initial_pose, model);
+            obj.poseEstimator = PoseEstimator(rIF.rob.initial_pose, model, map);
             obj.logger = Logger(true);
             obj.executor = Executor(model);
             obj.perceptor = Perceptor(model);
@@ -103,15 +104,12 @@ classdef mrplSystem < handle
         
         function driveToPallet(obj, palletRefPose)
             %palletPose -> [x;y;th] where the pallet ~should~ be
-            
-            %TODO
             center = obj.world2robot(palletRefPose);
             radius = palletSailModel.sail_width;
             %add protection to empty POI
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
             %Drive to 5cm in front of pallet, facing pallet
-            %0cm for now
             H = [cos(palletRefPose(3)), -sin(palletRefPose(3)), palletRefPose(1);...
                  sin(palletRefPose(3)), cos(palletRefPose(3)), palletRefPose(2);...
                  0, 0, 1];
@@ -120,22 +118,14 @@ classdef mrplSystem < handle
             X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
             goalPose = obj.world2robot(goalPose);
-            obj.executeTrajectoryToRelativePose(goalPose, 1);
-            
-            
+            obj.executeTrajectoryToRelativePose(goalPose, 1);               
             %Drive 5cm forward
-            
             center = obj.world2robot(palletRefPose);
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest);
             %Relative to Robot
             standoff = palletPose(1) - obj.model.forkOffset(1) - palletOffset(1);
-            disp(standoff)
-            tmp = obj.rIF.rob.sim_motion.pose;
             obj.forward(standoff);
-            curr = obj.rIF.rob.sim_motion.pose;
-            disp(curr - tmp)
-            % obj.rotate(2*pi,0.5); Test
         end
         
         function forward(obj, dist)
@@ -162,10 +152,53 @@ classdef mrplSystem < handle
            H_w_r = [cos(rPose(3)), -sin(rPose(3)), rPose(1);...
                 sin(rPose(3)),  cos(rPose(3)), rPose(2);...
                 0, 0, 1];
-           X = H_w_r * [p_r(1:2) ; 1];
-           p_w = [X(1:2) ; p_r(3) - rPose(3)];
+           px_r = p_r(1,:);
+           py_r = p_r(2,:);
+           pth_r = p_r(3,:);
+           X_w = H_w_r * [px_r; py_r ; ones(1, size(px_r,2))];
+           px_w = X_w(1,:);
+           py_w = X_w(2,:);
+           pth_w = pth_r - rPose(3);
+           p_w = [px_w; py_w; pth_w];
         end
         
+        function teleOp(obj)
+            %A lot of this is super hacky/specific to lab 10
+            %I didn't want to change getPose() because it's used everywhere
+            %and will be finalized during the next lab, so this function is
+            %going to look ugly until then.
+            bodyPts_r = obj.model.bodyGraph();
+            points_r = obj.perceptor.allPoints();
+            poseTri = obj.poseEstimator.getPoseTri(points_r);
+            H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
+                     sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
+                     0, 0, 1];
+            bodyPts_w = H_w_r * [bodyPts_r ; zeros(1,size(bodyPts_r,2))];
+            points_w = H_w_r * [points_r ; zeros(1, size(points_r, 2))];
+            
+            fig = figure(2);
+            hold on
+            robPlot = plot(bodyPts_w(1,:), bodyPts_w(2,:), 'g');
+            ptsPlot = plot(points_w(1,:), points_w(2,:), 'k');
+            hold off
+            d = robotKeypressDriver(fig);
+            while true
+                vGain = 1.0;
+                d.drive(obj.rIF, vGain);
+                points_r = obj.perceptor.allPoints();
+                poseTri = obj.poseEstimator.getPoseTri(points_r);
+                H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
+                         sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
+                         0, 0, 1];
+                bodyPts_w = H_w_r * [bodyPts_r ; zeros(1,size(bodyPts_r,2))];
+                points_w = H_w_r * [points_r ; zeros(1, size(points_r, 2))];
+                set(robPlot, 'XData', bodyPts_w(1,:))
+                set(robPlot, 'YData', bodyPts_w(2,:))
+                set(ptsPlot, 'XData', points_w(1,:))
+                set(ptsPlot, 'YData', points_w(2,:))
+                break
+            end
+        end
     end
     
 end
