@@ -75,15 +75,20 @@ classdef lineMapLocalizer < handle
             err2_Plus0 = fitError(obj,poseVecIn,modelPts);
             
             eps = 1e-9; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
-            dp = [eps ; 0.0 ; 0.0];
-            newPoseVec = poseVecIn.getPose+dp;
+            dx = [eps ; 0.0 ; 0.0];
+            dy = [0.0; eps; 0.0];
+            dth = [0.0; 0.0; eps];
+            newPoseVecX = poseVecIn.getPose+dx;
+            xErr = fitError(obj, newPoseVecX, modelPts);
+            J(1,:) = (xErr - err2_Plus0)/eps;
             
-            xErr = fitError(obj, newPoseVec, modelPts);
+            newPoseVecY = poseVecIn.getPose + dy;
+            yErr = fitError(obj, newPoseVecY, modelPts);
+            J(2,:) = (yErr - err2_Plus0)/eps;
             
-            newPoseVec = poseVecIn.getPose +
-            yErr = fitError(obj, 
-            
-           J(1) = (xErr - err2_Plus0)/eps;
+            newPoseVecTh = poseVecIn.getPose + dth;
+            thErr = fitError(obj, newPoseVecTh.getPose, modelPts);
+            J(3,:) = (thErr - err2_Plus0)/eps;
             
         end
         
