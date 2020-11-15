@@ -135,7 +135,7 @@ classdef lineMapLocalizer < handle
             
             err2_Plus0 = fitError(obj,poseVecIn,modelPts);
             
-            eps = 1e-9; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
+            eps = 1e-4; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
             dx = [eps ; 0.0 ; 0.0];
             dy = [0.0; eps; 0.0];
             dth = [0.0; 0.0; eps];

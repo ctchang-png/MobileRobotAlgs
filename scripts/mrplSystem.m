@@ -168,35 +168,40 @@ classdef mrplSystem < handle
             %and will be finalized during the next lab, so this function is
             %going to look ugly until then.
             bodyPts_r = obj.model.bodyGraph();
-            points_r = obj.perceptor.allPoints();
+            points_r = obj.perceptor.allPoints(10);
             poseTri = obj.poseEstimator.getPoseTri(points_r);
             H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
                      sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
                      0, 0, 1];
             bodyPts_w = H_w_r * [bodyPts_r ; zeros(1,size(bodyPts_r,2))];
             points_w = H_w_r * [points_r ; zeros(1, size(points_r, 2))];
-            
+            p1 = obj.poseEstimator.map.lines_p1;
+            p2 = obj.poseEstimator.map.lines_p2;
             fig = figure(2);
             hold on
             robPlot = plot(bodyPts_w(1,:), bodyPts_w(2,:), 'g');
-            ptsPlot = plot(points_w(1,:), points_w(2,:), 'k');
+            ptsPlot = plot(points_w(1,:), points_w(2,:), 'ro');
+            for idx = 1:size(p1,2)
+                plot([p1(1,idx) p2(1,idx)], [p1(2,idx) p2(2,idx)], 'b')
+            end
             hold off
+            xlim([-2.1 2.1])
+            ylim([-2.1 2.1])
             d = robotKeypressDriver(fig);
             while true
                 vGain = 1.0;
                 d.drive(obj.rIF, vGain);
-                points_r = obj.perceptor.allPoints();
+                points_r = obj.perceptor.allPoints(10);
                 poseTri = obj.poseEstimator.getPoseTri(points_r);
                 H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
                          sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
                          0, 0, 1];
-                bodyPts_w = H_w_r * [bodyPts_r ; zeros(1,size(bodyPts_r,2))];
-                points_w = H_w_r * [points_r ; zeros(1, size(points_r, 2))];
+                bodyPts_w = H_w_r * [bodyPts_r ; ones(1,size(bodyPts_r,2))];
+                points_w = H_w_r * [points_r ; ones(1, size(points_r, 2))];
                 set(robPlot, 'XData', bodyPts_w(1,:))
                 set(robPlot, 'YData', bodyPts_w(2,:))
                 set(ptsPlot, 'XData', points_w(1,:))
                 set(ptsPlot, 'YData', points_w(2,:))
-                break
             end
         end
     end

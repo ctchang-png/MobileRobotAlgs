@@ -25,8 +25,8 @@ classdef Model < handle
             bx = [rad*cos(cir) lx];
             by = [rad*sin(cir) ly];
 
-            %create homogeneous points
-            bodyPts = [bx ; by ; ones(1,size(bx,2))];
+            %create points
+            bodyPts = [bx ; by];
         end   
     end
     

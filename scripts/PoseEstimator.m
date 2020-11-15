@@ -66,7 +66,8 @@ classdef PoseEstimator < handle
             inPose = obj.pose;
             maxIters = 100; 
             points = [points ; ones(1, size(points, 2))];
-            [success, pose] = obj.map.refinePose(inPose,points,maxIters);  
+            [success, pose] = obj.map.refinePose(inPose,points,maxIters);
+            obj.pose = pose;
         end
     end
     

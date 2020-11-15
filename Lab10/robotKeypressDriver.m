@@ -2,8 +2,8 @@ classdef robotKeypressDriver < handle
     %robotKeypressDriver Creates a keyboard event handler and then lets
     % the user drive the robot with the arrow keys.
     properties(Constant)
-        linVel = 0.02;
-        angVel = 0.06; % 0.006 / 0.1 (for W)
+        linVel = 0.2;
+        angVel = 0.4; % 0.006 / 0.1 (for W)
     end
     
     properties(Access = private)
