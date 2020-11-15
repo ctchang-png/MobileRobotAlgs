@@ -4,7 +4,7 @@ clc
 clf
 num = sum(uint8(char("Fido")));
 model = Model();
-initialPoseVec = [0.0; 0.0; 0.0];
+initialPoseVec = [0.6096;0.6096;pi()/2.0];
 rIF = robotIF(num, true, initialPoseVec);
 
 p1 = [-2 ; -2];
@@ -22,4 +22,14 @@ map = lineMapLocalizer(lines_p1, lines_p2, 0.3, 0.01, 0.0005);
 
 system = mrplSystem(rIF, model, map);
 pause(2.0)
-system.teleOp()
+
+endPoints = [0.3048, 0.9144, pi()/2.0;...
+             0.9144, 0.3048, 0.0;...
+             0.6096, 0.6096, pi()/2.0]';
+for idx = 1:size(endPoints, 2)
+    terminalPose = endPoints(:,idx);
+    system.executeTrajectoryToWorldPose(terminalPose, 1)
+    err = rIF.rob.sim_motion.pose - terminalPose;
+    terminalErr = 1000*norm(err(1:2));
+    fprintf("Terminal Error for trajectory %1.0f = %2.1fmm \n", idx, terminalErr)
+end

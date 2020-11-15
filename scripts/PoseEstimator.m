@@ -28,20 +28,25 @@ classdef PoseEstimator < handle
         end
  
         function pose = getPose(obj)
-            %For now assume use_DR and use_triangulation are mutually
-            %exclusive
-            use_odom = true;
-            use_tri = false;
-            
+            pose = obj.pose;
+        end
+        
+        function updateFusedPose(obj, odom_only, points)
+            %Returns the fused pose with odometry and triangulation
+            gain = 0.25;
             poseOdom = obj.getPoseOdom();
-            if use_odom && ~use_tri
-                pose = poseOdom;
-            elseif use_tri && ~use_odom
-                pose = poseTri;
+            if odom_only
+                fusedPose = poseOdom;
             else
-                error('Not Yet implemented')
+                [success, poseTri] = obj.getPoseTri(poseOdom, points);
+                if ~success
+                    fusedPose = poseOdom;
+                else
+                    poseErr = poseTri - poseOdom;
+                    fusedPose = poseOdom + gain*poseErr;
+                end
             end
-            obj.pose = pose;
+            obj.pose = fusedPose;
         end
        
         function pose = getPoseOdom(obj)
@@ -62,12 +67,12 @@ classdef PoseEstimator < handle
             obj.encoderData = newEncoderData;
         end
         
-        function pose = getPoseTri(obj, points)
-            inPose = obj.pose;
+        function [success, pose] = getPoseTri(obj, inPose, points)
+            %inPose ->[x;y;th], initial guess for grad descent
+            %points -> x,y in homogeneous form, world frame
             maxIters = 100; 
             points = [points ; ones(1, size(points, 2))];
             [success, pose] = obj.map.refinePose(inPose,points,maxIters);
-            obj.pose = pose;
         end
     end
     

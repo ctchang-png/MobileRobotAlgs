@@ -8,7 +8,6 @@ classdef mrplSystem < handle
         perceptor
         trajOrigin = [0;0;0];
         trajectory
-
         H_w_t = [1,0,0;0,1,0;0,0,1];
     end
     
@@ -37,7 +36,7 @@ classdef mrplSystem < handle
             obj.perceptor = Perceptor(model);
             clear encoderEventListener
             clear lidarEventListener
-            clear PID_control
+            %clear PID_control
             rIF.encoders.NewMessageFcn=@encoderEventListener;
             rIF.laser.NewMessageFcn=@lidarEventListener;
             obj.setTrajOrigin(rIF.rob.initial_pose)
@@ -46,7 +45,7 @@ classdef mrplSystem < handle
             pause(1.0) 
         end
         
-        function executeTrajectory(obj, traj)
+        function executeTrajectory(obj, traj, odom_only)
             %traj -> reference trajectory, an instance of a sublcass of
             %ReferenceControl
             startTime = obj.rIF.toc();
@@ -56,12 +55,19 @@ classdef mrplSystem < handle
             controller = Controller(traj, obj.trajOrigin, obj.model);
             initialized = false;
 
-            while t < (Tf + 0.50) %0.5s for end corrections
+            while t < (Tf + 1.0) %1.0s for end corrections
                 if ~initialized
                     %init
                     initialized = true;
                 end
                 t = obj.rIF.toc() - startTime;
+                if ~odom_only
+                    points = obj.perceptor.allPoints(10);
+                    obj.poseEstimator.updateFusedPose(false, points)
+                else
+                    obj.poseEstimator.updateFusedPose(true, [])
+                end
+                
                 est_pose = obj.poseEstimator.getPose();
                 u = controller.getControl(est_pose, min(t,Tf));
                 obj.executor.sendControl(obj.rIF, u);
@@ -89,7 +95,18 @@ classdef mrplSystem < handle
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
             traj.planVelocities(obj.model.vMax)
             obj.trajectory = traj;
-            obj.executeTrajectory(traj);
+            obj.executeTrajectory(traj, false);
+        end
+        
+        function executeTrajectoryToWorldPose(obj, goalPose, sign)
+            points = obj.perceptor.allPoints(10);
+            obj.poseEstimator.updateFusedPose(false, points)
+            goalPose = obj.world2robot(goalPose);
+            x = goalPose(1); y = goalPose(2); th = goalPose(3);
+            traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign);
+            traj.planVelocities(obj.model.vMax)
+            obj.trajectory = traj;
+            obj.executeTrajectory(traj, false);            
         end
         
         function setTrajOrigin(obj,newOrigin)
@@ -117,9 +134,8 @@ classdef mrplSystem < handle
             standoff = 0.10;
             X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
-            goalPose = obj.world2robot(goalPose);
-            obj.executeTrajectoryToRelativePose(goalPose, 1);               
-            %Drive 5cm forward
+            obj.executeTrajectoryToWorldPose(goalPose, 1);               
+            %Drive standoff forward
             center = obj.world2robot(palletRefPose);
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest);
@@ -129,12 +145,13 @@ classdef mrplSystem < handle
         end
         
         function forward(obj, dist)
-            %Make robot go forward distance
+            %Make robot go forward a small distance
+            %Triangulation is turned OFF
             x = abs(dist); y = 0; th = 0;
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign(dist));
             traj.planVelocities(0.06)
             obj.trajectory = traj;
-            obj.executeTrajectory(traj);
+            obj.executeTrajectory(traj, true);
             obj.rIF.stop()
         end
         
@@ -169,12 +186,12 @@ classdef mrplSystem < handle
             %going to look ugly until then.
             bodyPts_r = obj.model.bodyGraph();
             points_r = obj.perceptor.allPoints(10);
-            poseTri = obj.poseEstimator.getPoseTri(points_r);
+            poseTri = [0;0;0];
             H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
                      sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
                      0, 0, 1];
-            bodyPts_w = H_w_r * [bodyPts_r ; zeros(1,size(bodyPts_r,2))];
-            points_w = H_w_r * [points_r ; zeros(1, size(points_r, 2))];
+            bodyPts_w = H_w_r * [bodyPts_r ; ones(1,size(bodyPts_r,2))];
+            points_w = H_w_r * [points_r ; ones(1, size(points_r, 2))];
             p1 = obj.poseEstimator.map.lines_p1;
             p2 = obj.poseEstimator.map.lines_p2;
             fig = figure(2);
@@ -192,12 +209,13 @@ classdef mrplSystem < handle
                 vGain = 1.0;
                 d.drive(obj.rIF, vGain);
                 points_r = obj.perceptor.allPoints(10);
-                poseTri = obj.poseEstimator.getPoseTri(points_r);
+                [success, poseTri] = obj.poseEstimator.getPoseTri(poseTri, points_r);
+                
                 H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
                          sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...
                          0, 0, 1];
                 bodyPts_w = H_w_r * [bodyPts_r ; ones(1,size(bodyPts_r,2))];
-                points_w = H_w_r * [points_r ; ones(1, size(points_r, 2))];
+                points_w = H_w_r * [points_r; ones(1, size(points_r,2))];
                 set(robPlot, 'XData', bodyPts_w(1,:))
                 set(robPlot, 'YData', bodyPts_w(2,:))
                 set(ptsPlot, 'XData', points_w(1,:))
