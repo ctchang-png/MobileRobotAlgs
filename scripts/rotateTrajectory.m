@@ -5,6 +5,8 @@ classdef rotateTrajectory < ReferenceControl
         numSamples = 0;
         theta = 0;
         w = 0;
+        timeArray = [];
+        poseArray = [];
     end
     
     methods (Access = private)

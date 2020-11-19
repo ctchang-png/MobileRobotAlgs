@@ -142,6 +142,7 @@ classdef mrplSystem < handle
             %Relative to Robot
             standoff = palletPose(1) - obj.model.forkOffset(1) - palletOffset(1);
             obj.forward(standoff);
+            obj.rotate(pi,0.5);
         end
         
         function forward(obj, dist)
@@ -159,6 +160,7 @@ classdef mrplSystem < handle
             %Make robot rotate theta 
             traj = rotateTrajectory([theta, w]);
             obj.trajectory = traj;
+            traj.planVelocities(w);
             obj.executeTrajectory(traj);
             obj.rIF.stop();
         end
