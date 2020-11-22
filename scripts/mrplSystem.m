@@ -211,7 +211,7 @@ classdef mrplSystem < handle
                 vGain = 1.0;
                 d.drive(obj.rIF, vGain);
                 points_r = obj.perceptor.allPoints(10);
-                [success, poseTri] = obj.poseEstimator.getPoseTri(poseTri, points_r);
+                [success, poseTri] = obj.poseEstimator.getPoseTri(poseTri, points_r)
                 
                 H_w_r = [cos(poseTri(3)), -sin(poseTri(3)), poseTri(1);...
                          sin(poseTri(3)),  cos(poseTri(3)), poseTri(2);...

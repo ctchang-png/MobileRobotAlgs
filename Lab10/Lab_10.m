@@ -4,13 +4,13 @@ clc
 clf
 num = sum(uint8(char("Fido")));
 model = Model();
-initialPoseVec = [0.0; 0.0; 0.0];
+initialPoseVec = [0.5; 0.5; 0.0];
 rIF = robotIF(num, true, initialPoseVec);
 
-p1 = [-2 ; -2];
-p2 = [ 2 ; -2];
+p1 = [0 ; 0];
+p2 = [ 0 ; 1.5];
 p3 = [ 2 ; 2];
-p4 = [-2 ; 2];
+p4 = [1.5 ; 0];
 %lines_p1 = [p1 p2 p3 p4];
 %lines_p2 = [p2 p3 p4 p1];
 lines_p1 = [p4 p1];
