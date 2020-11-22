@@ -33,7 +33,7 @@ classdef PoseEstimator < handle
         
         function updateFusedPose(obj, odom_only, points)
             %Returns the fused pose with odometry and triangulation
-            gain = 0.25;
+            gain = 0.15;
             poseOdom = obj.getPoseOdom();
             if odom_only
                 fusedPose = poseOdom;

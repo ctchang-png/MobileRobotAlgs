@@ -7,14 +7,18 @@ model = Model();
 initialPoseVec = [0.6096;0.6096;pi()/2.0];
 rIF = robotIF(num, true, initialPoseVec);
 
-p1 = [-2 ; -2];
-p2 = [ 2 ; -2];
+p1 = [0 ; 0];
+p2 = [ 1.5 ; 0];
 p3 = [ 2 ; 2];
-p4 = [-2 ; 2];
-lines_p1 = [p1 p2 p3 p4];
-lines_p2 = [p2 p3 p4 p1];
+p4 = [0 ; 1.5];
+%lines_p1 = [p1 p2 p3 p4];
+%lines_p2 = [p2 p3 p4 p1];
+lines_p1 = [p4 p1];
+lines_p2 = [p1 p2];
+%worldLineArray = worldModel.createXYAxes();
 if rIF.rob.do_sim
-    wallsShape = polyLineShape([p1, p2, p3, p4, p1; ones(1, 5)]);
+    wallsShape = polyLineShape([p4, p1, p2; ones(1, 3)]);
+    %wallsShape = polyLineShape(worldLineArray);
     rIF.addObjects(wallsShape);
 end
 map = lineMapLocalizer(lines_p1, lines_p2, 0.3, 0.01, 0.0005);

@@ -39,7 +39,7 @@ classdef Controller < handle
             lambda = obj.lambda;
             obj.kx = 1/lambda;
             obj.ky = 2/(lambda^2);
-            obj.kth = 2/lambda;
+            obj.kth = 1.5/lambda;
         end
         
         function u = getControl(obj, pose, t)
