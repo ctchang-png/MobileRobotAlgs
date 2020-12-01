@@ -70,7 +70,7 @@ classdef PoseEstimator < handle
         function [success, pose] = getPoseTri(obj, inPose, points)
             %inPose ->[x;y;th], initial guess for grad descent
             %points -> x,y in homogeneous form, world frame
-            maxIters = 300; 
+            maxIters = 500; 
             points = [points ; ones(1, size(points, 2))];
             [success, pose] = obj.map.refinePose(inPose,points,maxIters);
         end
