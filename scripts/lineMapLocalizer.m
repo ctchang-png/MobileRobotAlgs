@@ -135,7 +135,7 @@ classdef lineMapLocalizer < handle
             
             err2_Plus0 = fitError(obj,poseVecIn,modelPts);
             
-            eps = 1e-5; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
+            eps = 1e-7; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
             dx = [eps ; 0.0 ; 0.0];
             dy = [0.0; eps; 0.0];
             dth = [0.0; 0.0; eps];
@@ -152,7 +152,7 @@ classdef lineMapLocalizer < handle
             J(:,3) = (thErr - err2_Plus0)/eps;
         end
         
-        function [success, outPose] = refinePose(obj,inPose,modelPts,maxIters)
+        function [success, outPose, err2_Plus0, grad] = refinePose(obj,inPose,modelPts,maxIters)
             % refine robot pose in world (inPose) based on lidar
             % registration. Terminates if maxIters iterations is
             % exceeded or if insufficient points match the lines.
@@ -166,7 +166,8 @@ classdef lineMapLocalizer < handle
             for iter = 1:maxIters
                [err2_Plus0,J] = getJacobian(obj,outPose,modelPts);
                %Jacobian is gradient in this case
-               if err2_Plus0 < obj.errThresh && norm(J) < obj.gradThresh
+               grad = norm(J);
+               if err2_Plus0 < obj.errThresh && grad < obj.gradThresh
                    success = true;
                    return
                end

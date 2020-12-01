@@ -6,6 +6,7 @@ classdef mrplSystem < handle
         logger
         executor
         perceptor
+        map
         trajOrigin = [0;0;0];
         trajectory
         H_w_t = [1,0,0;0,1,0;0,0,1];
@@ -31,6 +32,7 @@ classdef mrplSystem < handle
             %map -> instance of lineMapLocalizer
             obj = obj@handle;
             obj.model = model;
+            obj.map = map;
             obj.poseEstimator = PoseEstimator(rIF.rob.initial_pose, model, map);
             obj.logger = Logger(true);
             obj.executor = Executor(model);
@@ -128,8 +130,15 @@ classdef mrplSystem < handle
         end
         
         function triangulate(obj)
-            points = obj.perceptor.allPoints(1);
-            obj.poseEstimator.setPoseWithTriangulation(points)
+            points = obj.perceptor.allPoints(10);
+            [success, pose, err, grad] = obj.poseEstimator.setPoseWithTriangulation(points);
+            if ~success
+                p = pose'
+                realpose = obj.rIF.rob.sim_motion.pose;
+                rp = realpose'
+                err
+                grad
+            end
             pose = obj.poseEstimator.getPose();
             obj.setTrajOrigin(pose)
         end
@@ -226,7 +235,7 @@ classdef mrplSystem < handle
             obj.forward(standoff)
             obj.rIF.forksDown()
             obj.forward(-standoff)
-            obj.rotate((7/8)*pi, pi/2)
+            obj.rotate((7/8)*pi, pi)
         end
         
         function forward(obj, dist)
