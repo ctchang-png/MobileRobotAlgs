@@ -135,7 +135,7 @@ classdef lineMapLocalizer < handle
             
             err2_Plus0 = fitError(obj,poseVecIn,modelPts);
             
-            eps = 1e-4; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
+            eps = 1e-5; % THIS MAY BE TOO SMALL FOR YOU. TRY -4 IF SO
             dx = [eps ; 0.0 ; 0.0];
             dy = [0.0; eps; 0.0];
             dth = [0.0; 0.0; eps];
@@ -166,12 +166,15 @@ classdef lineMapLocalizer < handle
             for iter = 1:maxIters
                [err2_Plus0,J] = getJacobian(obj,outPose,modelPts);
                %Jacobian is gradient in this case
-               if err2_Plus0 < obj.errThresh^2 || norm(J) < obj.gradThresh
+               if err2_Plus0 < obj.errThresh || norm(J) < obj.gradThresh
                    success = true;
                    return
                end
                outPose = outPose -obj.gain * J'; 
+               outPose(3) = wrapToPi(outPose(3));
             end
+            err2_Plus0
+            norm(J)
         end
         
     end

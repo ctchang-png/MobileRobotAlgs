@@ -4,8 +4,8 @@ classdef Model < handle
         W2 = 0.045;
         t_delay = 0.1632;
         vMax = 0.200;
-        lidarOffset = -5;
-        forkOffset = [0.068; 0];
+        lidarOffset = -6;
+        forkOffset = [0.075; 0];
     end
    
     methods(Static)

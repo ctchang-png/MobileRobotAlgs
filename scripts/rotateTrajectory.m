@@ -22,7 +22,7 @@ classdef rotateTrajectory < ReferenceControl
         end
         
         function pose = getPoseAtTime(obj, t)
-            Tf = obj.getTrajectoryDuration;
+            Tf = obj.getTrajectoryDuration();
             if t > Tf
                 th = obj.theta;
             else

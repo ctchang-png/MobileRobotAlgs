@@ -61,18 +61,31 @@ classdef PoseEstimator < handle
             th = obj.pose(3) + dth/2;
             x = obj.pose(1) + ds*cos(th);
             y = obj.pose(2) + ds*sin(th);
-            th = th + dth/2;
-            pose = [x;y;th];
+            th = wrapToPi(th + dth/2);
             
+            pose = [x;y;th];
             obj.encoderData = newEncoderData;
         end
         
         function [success, pose] = getPoseTri(obj, inPose, points)
             %inPose ->[x;y;th], initial guess for grad descent
             %points -> x,y in homogeneous form, world frame
-            maxIters = 100; 
+            maxIters = 200; 
             points = [points ; ones(1, size(points, 2))];
             [success, pose] = obj.map.refinePose(inPose,points,maxIters);
+        end
+        
+        function setPoseWithTriangulation(obj, points)
+           inPose = obj.pose;
+           points = [points ; ones(1, length(points))];
+           maxIters = 100;
+           [success, pose] = obj.map.refinePose(inPose,points,maxIters);
+           pose(3) = wrapToPi(pose(3));
+           if ~success
+               disp("Triangulation Unsuccessful")
+           else
+               obj.pose = pose;
+           end
         end
     end
     

@@ -30,7 +30,8 @@ classdef Perceptor < handle
       
         
        function X = irToXy(obj, i, r)
-            th = (i.' - 1) * (pi/180) + obj.model.lidarOffset*(pi/180);
+            th = i.' + obj.model.lidarOffset;
+            th = wrapToPi(th * (pi/180));
             x = r .* cos(th);
             y = r .* sin(th);
             X = [x, y]';
@@ -40,6 +41,7 @@ classdef Perceptor < handle
           ranges = Perceptor.lidarDataGetter();
           points = obj.irToXy(1:360, ranges);
           points = points(:,1:step:end);
+          points = rmmissing(points, 2);
        end
        
        function points = ROI_circle(obj, radius, center)
