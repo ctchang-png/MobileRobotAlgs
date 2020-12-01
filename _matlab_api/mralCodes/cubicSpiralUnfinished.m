@@ -295,7 +295,7 @@ classdef cubicSpiral < handle
                 ds = obj.distArray(i+1) - obj.distArray(i);
                 V = obj.VArray(i);
                 % Avoid division by zero
-                if(abs(V) < 0.001); V = obj.VArray(i+1); end
+                if(abs(V) < 0.001); V = max(obj.VArray(i+1); end
 
                 obj.timeArray(i+1)= obj.timeArray(i)+ds/V;
             end

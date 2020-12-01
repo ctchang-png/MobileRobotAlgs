@@ -5,7 +5,7 @@ classdef Model < handle
         t_delay = 0.1632;
         vMax = 0.200;
         lidarOffset = -6;
-        forkOffset = [0.075; 0];
+        forkOffset = [0.062; 0];
     end
    
     methods(Static)

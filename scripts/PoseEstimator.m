@@ -33,7 +33,7 @@ classdef PoseEstimator < handle
         
         function updateFusedPose(obj, odom_only, points)
             %Returns the fused pose with odometry and triangulation
-            gain = 0.15;
+            gain = 0.10;
             poseOdom = obj.getPoseOdom();
             if odom_only
                 fusedPose = poseOdom;
@@ -78,7 +78,7 @@ classdef PoseEstimator < handle
         function setPoseWithTriangulation(obj, points)
            inPose = obj.pose;
            points = [points ; ones(1, length(points))];
-           maxIters = 100;
+           maxIters = 150;
            [success, pose] = obj.map.refinePose(inPose,points,maxIters);
            pose(3) = wrapToPi(pose(3));
            if ~success

@@ -27,7 +27,7 @@ if rIF.rob.do_sim
     wallsShape = polyLineShape([p4, p1, p2, p3; ones(1, 4)]);
     rIF.addObjects(wallsShape);
 end
-map = lineMapLocalizer(lines_p1, lines_p2, 0.05, 0.08, 0.0005);
+map = lineMapLocalizer(lines_p1, lines_p2, 0.10, 0.02, 0.005);
 
 
 system = mrplSystem(rIF, model, map);

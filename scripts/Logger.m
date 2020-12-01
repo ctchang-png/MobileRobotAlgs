@@ -10,6 +10,7 @@ classdef Logger < handle
         real_logs_Y;
         pred_plt;
         est_plt;
+        real_plt;
         plot_idx = 0;
     end
     
@@ -40,6 +41,7 @@ classdef Logger < handle
                 %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
                 obj.pred_plt = plot(obj.pred_logs_X, obj.pred_logs_Y, 'g-'); %pred = reference
                 obj.est_plt = plot(obj.est_logs_X, obj.est_logs_Y, 'b-'); %est = sensed
+                obj.real_plt = plot(obj.real_logs_X, obj.real_logs_Y, 'k-');
                 hold off
                 legend({'ref','sensed'}, 'Location', 'northeastoutside')
            end
@@ -66,6 +68,8 @@ classdef Logger < handle
                    'ydata', obj.pred_logs_Y(1:obj.plot_idx))
                set(obj.est_plt, 'xdata', obj.est_logs_X(1:obj.plot_idx), ...
                    'ydata', obj.est_logs_Y(1:obj.plot_idx))
+               set(obj.real_plt, 'xdata', obj.real_logs_X(1:obj.plot_idx),...
+                   'ydata', obj.real_logs_Y(1:obj.plot_idx))
            end
         end
         

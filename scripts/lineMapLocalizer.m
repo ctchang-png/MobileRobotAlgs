@@ -166,15 +166,13 @@ classdef lineMapLocalizer < handle
             for iter = 1:maxIters
                [err2_Plus0,J] = getJacobian(obj,outPose,modelPts);
                %Jacobian is gradient in this case
-               if err2_Plus0 < obj.errThresh || norm(J) < obj.gradThresh
+               if err2_Plus0 < obj.errThresh && norm(J) < obj.gradThresh
                    success = true;
                    return
                end
                outPose = outPose -obj.gain * J'; 
                outPose(3) = wrapToPi(outPose(3));
             end
-            err2_Plus0
-            norm(J)
         end
         
     end

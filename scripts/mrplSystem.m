@@ -172,7 +172,7 @@ classdef mrplSystem < handle
                  sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
                  0, 0, 1];
             palletOffset = [0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth); 0];
-            standoff = 0.10;
+            standoff = 0.15;
             X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
             goalPose_w = obj.robot2world(goalPose);
@@ -206,7 +206,7 @@ classdef mrplSystem < handle
             realPose = obj.rIF.rob.sim_motion.pose;
             estPose = obj.poseEstimator.getPose();
             goalPose = dropRefPose;
-            standoff = 0.10;
+            standoff = 0.15;
             palletOffset = 0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth);
             goalPose(2) = goalPose(2) + standoff + obj.model.forkOffset(1) + palletOffset;
             %Above only works cause all dropoffs are vertical
@@ -226,7 +226,7 @@ classdef mrplSystem < handle
             obj.forward(standoff)
             obj.rIF.forksDown()
             obj.forward(-standoff)
-            obj.rotate(pi, pi/2)
+            obj.rotate((7/8)*pi, pi/2)
         end
         
         function forward(obj, dist)
@@ -234,7 +234,7 @@ classdef mrplSystem < handle
             %Triangulation is turned OFF
             x = abs(dist); y = 0; th = 0;
             traj = cubicSpiralTrajectory.planTrajectory(x, y, th, sign(dist));
-            traj.planVelocities(0.06)
+            traj.planVelocities(0.15)
             obj.trajectory = traj;
             obj.executeTrajectory(traj, true);
             obj.rIF.stop()
