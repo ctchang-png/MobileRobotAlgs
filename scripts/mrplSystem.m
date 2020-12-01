@@ -1,4 +1,4 @@
-classdef mrplSystem < handle
+classdef mrplSystem < handle 
     properties
         rIF
         model
@@ -224,6 +224,7 @@ classdef mrplSystem < handle
                 set(ptsPlot, 'YData', points_w(2,:))
             end
         end
+                
     end
     
 end
