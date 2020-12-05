@@ -130,15 +130,8 @@ classdef mrplSystem < handle
         end
         
         function triangulate(obj)
-            points = obj.perceptor.allPoints(10);
+            points = obj.perceptor.allPoints(5);
             [success, pose, err, grad] = obj.poseEstimator.setPoseWithTriangulation(points);
-            if ~success
-                p = pose'
-                realpose = obj.rIF.rob.sim_motion.pose;
-                rp = realpose'
-                err
-                grad
-            end
             pose = obj.poseEstimator.getPose();
             obj.setTrajOrigin(pose)
         end
@@ -146,61 +139,46 @@ classdef mrplSystem < handle
         function driveToPallet(obj, palletRefPose)
             %palletPose -> [x;y;th] where the pallet ~should~ be
             obj.triangulate()
-            points = obj.perceptor.allPoints(10);
+            %Drive half way
+            %{
             center = obj.world2robot(palletRefPose);
             radius = (1.2)*palletSailModel.sail_width;
-            %add protection to empty POI
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
-            figure(1)
             POI_w = obj.robot2world([pointsOfInterest; zeros(length(pointsOfInterest))]);
-            points_w = obj.robot2world([points; zeros(1, length(points))]);
-            %{
-            hold on
-            plot(points_w(1,:), points_w(2,:), 'kx')
-            plot(POI_w(1,:), POI_w(2,:), 'bx')
-            realPose = obj.rIF.rob.sim_motion.pose;
-            estPose = obj.poseEstimator.getPose();
-            bodyPts = obj.model.bodyGraph();
-            bodyPts_w = obj.robot2world([bodyPts;ones(1,length(bodyPts))]);
-            plot(realPose(1), realPose(2), 'ko')
-            plot(bodyPts_w(1,:), bodyPts_w(2,:), 'g')
-            hold off
-            axis([-0.2 1.4 0 1.2])
-            legend('off')
-            grid('on')
-            %}
+
             palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
-            palletPose_w = obj.robot2world(palletPose');
-            %{
-            hold on
-            plot(palletPose_w(1), palletPose_w(2), 'ro')
-            hold off
-            %}
+
             %Drive to 5cm in front of pallet, facing pallet
             H = [cos(palletPose(3)), -sin(palletPose(3)), palletPose(1);...
                  sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
                  0, 0, 1];
             palletOffset = [0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth); 0];
-            standoff = 0.15;
+            standoff = 0.12;
+            X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
+            goalPose = [(2/3)*X(1:2); 0];
+            %}
+            goalPose = obj.world2robot(palletRefPose);
+            goalPose = [(2/3)*goalPose(1:2); 0];
+            obj.executeTrajectoryToRelativePose(goalPose, 1);  
+            %Drive the other half
+            center = obj.world2robot(palletRefPose);
+            radius = (1.2)*palletSailModel.sail_width;
+            pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
+            POI_w = obj.robot2world([pointsOfInterest; zeros(length(pointsOfInterest))]);
+
+            palletPose = obj.perceptor.findLineCandidate(pointsOfInterest); %robot frame
+
+            %Drive to 5cm in front of pallet, facing pallet
+            H = [cos(palletPose(3)), -sin(palletPose(3)), palletPose(1);...
+                 sin(palletPose(3)), cos(palletPose(3)), palletPose(2);...
+                 0, 0, 1];
+            palletOffset = [0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth); 0];
+            standoff = 0.12;
             X = H*[-obj.model.forkOffset - palletOffset - [standoff;0]; 1];
             goalPose = [X(1:2); palletPose(3)];
-            goalPose_w = obj.robot2world(goalPose);
-            %{
-            hold on
-            plot(goalPose_w(1), goalPose_w(2), 'rx')
-            hold off
-            %}
-            obj.executeTrajectoryToRelativePose(goalPose, 1);  
-            %{
-            hold on
-            estPose = obj.poseEstimator.getPose();
-            realPose = obj.rIF.rob.sim_motion.pose;
-            bodyPts_w = obj.robot2world([bodyPts;ones(1,length(bodyPts))]);
-            plot(realPose(1), realPose(2), 'ko')
-            plot(bodyPts_w(1,:), bodyPts_w(2,:), 'g')
-            plot(realPose(1), realPose(2), 'ko')
-            hold off
-            %}
+            obj.executeTrajectoryToRelativePose(goalPose,1);
+            
+            
             %Drive standoff forward
             center = obj.world2robot(palletRefPose);
             pointsOfInterest = obj.perceptor.ROI_circle(radius, center(1:2));
@@ -215,7 +193,7 @@ classdef mrplSystem < handle
             realPose = obj.rIF.rob.sim_motion.pose;
             estPose = obj.poseEstimator.getPose();
             goalPose = dropRefPose;
-            standoff = 0.15;
+            standoff = 0.0;
             palletOffset = 0.5 * (palletSailModel.base_depth - palletSailModel.sail_depth);
             goalPose(2) = goalPose(2) + standoff + obj.model.forkOffset(1) + palletOffset;
             %Above only works cause all dropoffs are vertical
@@ -232,10 +210,10 @@ classdef mrplSystem < handle
             
             
             obj.executeTrajectoryToWorldPose(goalPose, 1)
-            obj.forward(standoff)
+            %obj.forward(standoff)
             obj.rIF.forksDown()
-            obj.forward(-standoff)
-            obj.rotate((7/8)*pi, pi)
+            %obj.forward(-standoff)
+            obj.rotate((6/8)*pi, pi)
         end
         
         function forward(obj, dist)

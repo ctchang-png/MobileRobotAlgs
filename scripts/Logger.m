@@ -34,8 +34,8 @@ classdef Logger < handle
                 title('Reference Trajectory vs. Sensed Trajectory - Pose')
                 xlabel('robotX (m)')
                 ylabel('robotY (m)')
-                xlim([0 1.0]);
-                ylim([0 1.0]);
+                xlim([0 2.5]);
+                ylim([0 2.0]);
                 hold on
                 %Implement if we want to see the target trajectory
                 %plot(traj.pose(1,:), traj.pose(2,:), 'k-')
